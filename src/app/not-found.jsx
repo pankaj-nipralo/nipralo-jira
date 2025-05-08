@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button"; // Optional, use if you have shadcn or custom button
+import Link from "next/link";
 
 const NotFound = () => {
   return (
@@ -9,11 +10,11 @@ const NotFound = () => {
       <p className="text-gray-600 mb-6 max-w-md">
         Sorry, the page you’re looking for doesn’t exist or has been moved.
       </p>
-      <a href="/" className="inline-block">
+      <Link href="/" className="inline-block">
         <Button className="px-6 py-3 text-white bg-gray-900 hover:bg-gray-700 cursor-pointer rounded-lg">
           Go to Home
         </Button>
-      </a>
+      </Link>
     </div>
   );
 };
