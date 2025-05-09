@@ -19,15 +19,12 @@ import clsx from "clsx";
 import { useState } from "react";
 
 const sidebarItems = [
-  { label: "Summary", icon: Globe, href: "summary" },
-  { label: "Backlog", icon: LayoutList, href: "backlog" },
-  { label: "Board", icon: ListTodo, href: "board" },
-  { label: "Time Tracking", icon: ClipboardList, href: "time-tracking" },
-  { label: "Goals", icon: Goal, href: "goals" },
-  { label: "All work", icon: ListTodo, href: "all-work" },
-  { label: "Team", icon: ListTodo, href: "team" },
-  { label: "Reports", icon: BarChart3, href: "reports" },
-  { label: "client", icon: BarChart3, href: "client" },
+  { label: "Summary", icon: Globe, href: "workspace/summary" },
+  { label: "Goals", icon: Goal, href: "workspace/goals" },
+  { label: "All work", icon: BarChart3, href: "workspace/all-work" },
+  { label: "Team", icon: ListTodo, href: "workspace/team" },
+  { label: "Reports", icon: LayoutList, href: "workspace/reports" },
+  { label: "client", icon: Clock, href: "workspace/client" },
 ];
 
 // Mock projects
