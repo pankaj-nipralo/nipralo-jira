@@ -19,13 +19,16 @@ import clsx from "clsx";
 import { useState } from "react";
 
 const sidebarItems = [
-  { label: "Summary", icon: Globe, href: "workspace/summary" },
-  { label: "Goals", icon: Goal, href: "workspace/goals" },
-  { label: "All work", icon: BarChart3, href: "workspace/all-work" },
-  { label: "Team", icon: ListTodo, href: "workspace/team" },
-  { label: "Reports", icon: LayoutList, href: "workspace/reports" },
-  { label: "client", icon: Clock, href: "workspace/client" },
+  { label: "Home", icon: Globe, href: "/" },
+  { label: "Summary", icon: Globe, href: "summary" },
+  { label: "Goals", icon: Goal, href: "goals" },
+  { label: "All work", icon: BarChart3, href: "all-work" },
+  { label: "Team", icon: ListTodo, href: "team" },
+  { label: "Reports", icon: LayoutList, href: "reports" },
+  { label: "client", icon: Clock, href: "client" },
 ];
+
+const url = "http://localhost:3000/nipralo-jira/workspace";
 
 // Mock projects
 const projects = [
@@ -50,6 +53,7 @@ const ProjectSidebar = () => {
     <aside className="w-64 border-r bg-white h-full p-3 flex flex-col relative">
       {/* Project Header */}
       <div className="relative mb-4">
+        {/* <Link href={`${url}`} className="text-gray-800 text-[18px] px-2 font-semibold">Workspace</Link> */}
         <button
           onClick={toggleDropdown}
           className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-gray-100 transition"
@@ -59,7 +63,9 @@ const ProjectSidebar = () => {
               {selectedProject.key}
             </div>
             <div className="flex flex-col text-left text-black">
-              <span className="text-sm font-medium">{selectedProject.name}</span>
+              <span className="text-sm font-medium">
+                {selectedProject.name}
+              </span>
               <span className="text-xs text-muted-foreground">Project</span>
             </div>
           </div>
@@ -96,13 +102,16 @@ const ProjectSidebar = () => {
       {/* Sidebar Items */}
       <div className="flex-1 space-y-1">
         {sidebarItems.map(({ label, icon: Icon, href }) => {
-          const active = pathname.includes(href);
+          const active =
+            href === "/"
+              ? pathname === "/nipralo-jira/workspace"
+              : pathname.includes(`/nipralo-jira/workspace/${href}`);
           return (
             <Link
               key={label}
-              href={href}
+              href={`${url}/${href}`}
               className={clsx(
-                "flex items-center px-3 py-2 text-sm font-medium rounded-md transition",
+                "flex items-center px-3 py-2 text-sm font-medium rounded-md transition text-gray-800",
                 active
                   ? "bg-blue-100 text-blue-600"
                   : "text-gray-700 hover:bg-gray-100"
