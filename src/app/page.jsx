@@ -18,12 +18,12 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { faqs, features } from "@/data/dataHub";
-import Header from "@/components/common/Header";
+// import Header from "@/components/common/Header2";
 
 export default function Home() {
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <div className="min-h-screen text-white">
         {/* Hero Section */}
         <section className="container mx-auto py-20 text-center">

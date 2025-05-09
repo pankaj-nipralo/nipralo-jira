@@ -1,4 +1,4 @@
-import Header from "@/components/common/Header";
+import Header from "@/components/common/Header2";
 
 const AuthLayout = ({ children }) => {
   return (

@@ -1,10 +1,11 @@
+import WorkspaceMaster from "@/components/workspace/WorkspaceMaster";
 
-const Workspace = () => {
+
+export default function Workspace() {
+  
   return (
-    <div>
-      Workspace
-    </div>
-  )
+    <>
+      <WorkspaceMaster />
+    </>
+  );
 }
-
-export default Workspace
