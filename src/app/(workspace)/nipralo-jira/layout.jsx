@@ -13,7 +13,7 @@ export default function WorkspaceLayout({ children }) {
       <div
         className={`${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed left-0 w-64 h-full bg-gray-800 text-white transition-transform duration-500 ease-in-out z-20`}
+        } fixed left-0 w-16 md:w-64 h-full bg-gray-800 text-white transition-all duration-500 ease-in-out z-20`}
       >
         <WorkspaceSidebar />
       </div>
@@ -21,7 +21,7 @@ export default function WorkspaceLayout({ children }) {
       {/* Main content wrapper */}
       <div
         className={`${
-          isSidebarOpen ? "ml-64" : "ml-0"
+          isSidebarOpen ? "ml-16 md:ml-64" : "ml-0"
         } flex-1 transition-all duration-500 ease-in-out`}
       >
         {/* Toggle button */}

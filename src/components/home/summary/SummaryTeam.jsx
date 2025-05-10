@@ -4,8 +4,8 @@ import React from "react";
 
 const SummaryTeams = () => {
   const priorities = [
-    { label: "Unassigned", color: "bg-red-500", value: 3 },
-    { label: "Pankaj", color: "bg-purple-400", value: 5 },
+    { label: "Unassigned", color: "bg-gray-500", value: 19 },
+    { label: "Pankaj", color: "bg-purple-400", value: 55 },
     { label: "Shoaib", color: "bg-green-500", value: 20 },
     { label: "Shahbaz", color: "bg-green-500", value: 10 },
   ];
@@ -18,18 +18,23 @@ const SummaryTeams = () => {
   ];
 
   return (
-    <div className="flex flex-col gap-6 w-full px-4 sm:px-6 lg:px-8">
+    <div className="flex flex-col gap-6 w-full">
       {/* Team WorkLoad */}
       <div className="bg-white py-5 px-6 sm:px-7 rounded-lg shadow">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
           <div>
-            <h2 className="font-semibold text-gray-800 text-lg sm:text-xl">Team WorkLoad</h2>
+            <h2 className="font-semibold text-gray-800 text-lg sm:text-xl">
+              Team WorkLoad
+            </h2>
             <p className="text-gray-500 text-sm sm:text-base">
               Get a breakdown of work Load by team members
             </p>
           </div>
-          <a href="#" className="text-blue-600 text-sm sm:text-base font-medium mt-2 sm:mt-0">
-            View all team 
+          <a
+            href="#"
+            className="text-blue-600 text-sm sm:text-base font-medium mt-2 sm:mt-0"
+          >
+            View all team
           </a>
         </div>
         <div className="space-y-3">
@@ -38,15 +43,24 @@ const SummaryTeams = () => {
               totalTasks > 0 ? (item.value / totalTasks) * 100 : 0;
             return (
               <div key={item.label}>
-                <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 text-sm sm:text-base">
-                  <span className="w-full sm:w-2/12">{item.label}</span>
-                  <div className="w-full sm:w-8/12 bg-gray-200 h-2 rounded overflow-hidden">
-                    <div
-                      className={`${item.color} h-2 rounded`}
-                      style={{ width: `${percent}%` }}
-                    ></div>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-sm sm:text-base">
+                  {/* Label */}
+                  <span className="sm:w-2/12 font-medium text-gray-700">
+                    {item.label}
+                  </span>
+
+                  {/* Bar + Value */}
+                  <div className="flex items-center gap-2 w-full sm:w-10/12">
+                    <div className="flex-1 bg-gray-200 h-2 rounded overflow-hidden">
+                      <div
+                        className={`${item.color} h-2 rounded transition-all duration-300`}
+                        style={{ width: `${percent}%` }}
+                      ></div>
+                    </div>
+                    <span className="min-w-[28px] text-right">
+                      {item.value}
+                    </span>
                   </div>
-                  <span className="w-full sm:w-2/12 text-right sm:text-left">{item.value}</span>
                 </div>
               </div>
             );
@@ -58,12 +72,17 @@ const SummaryTeams = () => {
       <div className="bg-white py-5 px-6 sm:px-7 rounded-lg shadow">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
           <div>
-            <h2 className="font-semibold text-gray-800 text-lg sm:text-xl">Epic Progress</h2>
+            <h2 className="font-semibold text-gray-800 text-lg sm:text-xl">
+              Epic Progress
+            </h2>
             <p className="text-gray-500 text-sm sm:text-base">
               Get a breakdown of work items by type
             </p>
           </div>
-          <a href="#" className="text-blue-600 text-sm sm:text-base font-medium mt-2 sm:mt-0">
+          <a
+            href="#"
+            className="text-blue-600 text-sm sm:text-base font-medium mt-2 sm:mt-0"
+          >
             View all items
           </a>
         </div>
