@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 
 const UserProfileMenu = () => {
   const [open, setOpen] = useState(false);
@@ -33,15 +34,17 @@ const UserProfileMenu = () => {
       {open && (
         <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-50">
           <ul className="py-2 text-sm text-gray-700">
-            <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-              My Account
-            </li>
-            <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-              Settings
-            </li>
-            <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-              Logout
-            </li>
+            <Link href="/settings">
+              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                My Account
+              </li>
+            </Link>
+          
+            <Link href="/login">
+              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                Logout
+              </li>
+            </Link>
           </ul>
         </div>
       )}

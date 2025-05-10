@@ -5,21 +5,25 @@ import Link from "next/link";
 import NavItem from "./NavItem";
 import UserProfileMenu from "./ProfileMenu";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 const Header = () => {
   const pathname = usePathname();
   const pathSegments = pathname.split("/").filter(Boolean);
+  const [isAuthPage, setIsAuthPage] = useState(false);
 
   const isInProject =
     pathSegments[0] === "workspace" && pathSegments[2] !== undefined;
 
+ useEffect(() => {
   const hideOnRoutes = [
     "/login",
     "/register",
     "/reset-password",
-    "update-password",
+    "/update-password",
   ];
-  if (hideOnRoutes.includes(pathname)) return null;
+  setIsAuthPage(hideOnRoutes.includes(pathname));
+}, [pathname]);
 
   const navItems = [
     { label: "Backlog", href: `${pathname}/backlog` },
@@ -49,7 +53,7 @@ const Header = () => {
       )}
 
       {/* Profile */}
-      <UserProfileMenu />
+      {!isAuthPage && <UserProfileMenu />}
     </header>
   );
 };

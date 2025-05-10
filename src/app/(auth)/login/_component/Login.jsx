@@ -97,7 +97,7 @@ export default function LoginForm() {
                           </FormControl>
                           <button
                             type="button"
-                            className="absolute right-3 top-1/2 -translate-y-1/2"
+                            className="absolute inset-y-0 right-2 cursor-pointer flex items-center text-muted-foreground hover:text-primary"
                             onClick={() => setShowPassword((prev) => !prev)}
                           >
                             {showPassword ? <EyeOff /> : <Eye />}

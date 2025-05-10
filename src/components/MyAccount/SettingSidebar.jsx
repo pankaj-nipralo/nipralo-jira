@@ -3,15 +3,12 @@
 import {
   Globe,
   ListTodo,
-  CalendarDays,
   BarChart3,
-  ClipboardList,
   Goal,
   LayoutList,
   Clock,
   Plus,
-  ChevronDown,
-  Check,
+  Settings,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -19,16 +16,12 @@ import clsx from "clsx";
 import { useState } from "react";
 
 const sidebarItems = [
-  { label: "Home", icon: Globe, href: "/" },
-  { label: "Summary", icon: Globe, href: "summary" },
-  { label: "Goals", icon: Goal, href: "goals" },
-  { label: "All work", icon: BarChart3, href: "all-work" },
-  { label: "Team", icon: ListTodo, href: "team" },
-  { label: "Reports", icon: LayoutList, href: "reports" },
-  { label: "client", icon: Clock, href: "client" },
+  { label: "Profile", icon: Globe, href: "my-account" },
+  { label: "Security", icon: Globe, href: "my-account/security" },
+  { label: "Logout", icon: Goal, href: "login" },
 ];
 
-const url = "http://localhost:3000/nipralo-jira/workspace";
+const url = "http://localhost:3000";
 
 // Mock projects
 const projects = [
@@ -39,15 +32,8 @@ const projects = [
 
 const ProjectSidebar = () => {
   const pathname = usePathname();
-  const [selectedProject, setSelectedProject] = useState(projects[0]);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const toggleDropdown = () => setDropdownOpen((prev) => !prev);
-
-  const handleProjectSelect = (project) => {
-    setSelectedProject(project);
-    setDropdownOpen(false);
-  };
 
   return (
     <aside className="w-64 border-r bg-white h-full p-3 flex flex-col relative">
@@ -60,43 +46,18 @@ const ProjectSidebar = () => {
         >
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded bg-black text-white text-xs font-bold flex items-center justify-center">
-              {selectedProject.key}
+              <Settings className="w-4 h-4" />
             </div>
             <div className="flex flex-col text-left text-black">
               <span className="text-sm font-medium">
-                {selectedProject.name}
+                My Settings 
               </span>
               <span className="text-xs text-muted-foreground">Project</span>
             </div>
           </div>
-          <ChevronDown className="w-4 h-4 text-black" />
         </button>
 
-        {/* Dropdown */}
-        {dropdownOpen && (
-          <div className="absolute mt-1 left-60 top-0 w-full bg-white text-black border rounded-md shadow z-50">
-            {projects.map((project) => (
-              <button
-                key={project.name}
-                onClick={() => handleProjectSelect(project)}
-                className="flex items-center justify-between w-full px-3 py-2 hover:bg-gray-100 text-sm"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 bg-gray-200 text-xs font-bold text-gray-700 rounded flex items-center justify-center">
-                    {project.key}
-                  </div>
-                  <span>{project.name}</span>
-                </div>
-                {selectedProject.name === project.name && (
-                  <Check className="w-4 h-4 text-blue-500" />
-                )}
-              </button>
-            ))}
-            <button className="w-full px-3 py-2 text-left text-sm text-gray-900 font-semibold hover:bg-gray-50 border-t">
-              + Add Project
-            </button>
-          </div>
-        )}
+     
       </div>
 
       {/* Sidebar Items */}

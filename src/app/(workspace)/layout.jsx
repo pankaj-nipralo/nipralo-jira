@@ -1,9 +1,9 @@
-import Footer from "@/components/common/Footer";
+// import Footer from "@/components/common/Footer";
 
 const WorkspaceLayout = ({ children }) => {
   return (
     <>{children}
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };
