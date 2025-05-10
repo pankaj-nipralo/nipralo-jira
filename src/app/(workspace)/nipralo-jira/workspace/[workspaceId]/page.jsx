@@ -1,12 +1,11 @@
-
 import React from 'react'
 
-const page = () => {
+const WorkspaceId = () => {
   return (
     <div>
-      nipralo demo workspace
+      Projecttt
     </div>
   )
 }
 
-export default page
+export default WorkspaceId

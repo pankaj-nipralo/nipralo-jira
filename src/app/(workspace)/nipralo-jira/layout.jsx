@@ -2,20 +2,20 @@
 
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import ProjectSidebar from "@/components/workspace/Sidebar";
+import WorkspaceSidebar from "@/components/home/Sidebar";
 
 export default function WorkspaceLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-full">
       {/* Sidebar */}
       <div
         className={`${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } fixed left-0 w-64 h-full bg-gray-800 text-white transition-transform duration-500 ease-in-out z-20`}
       >
-        <ProjectSidebar />
+        <WorkspaceSidebar />
       </div>
 
       {/* Main content wrapper */}
@@ -25,10 +25,10 @@ export default function WorkspaceLayout({ children }) {
         } flex-1 transition-all duration-500 ease-in-out`}
       >
         {/* Toggle button */}
-        <div className="p-4">
+        <div className="px-3 py-2">
           <button
             onClick={() => setIsSidebarOpen((prev) => !prev)}
-            className="mb-4 px-3 py-1 text-sm bg-gray-200 rounded-md hover:bg-gray-300"
+            className="px-3 py-1 text-sm bg-gray-200 rounded-md hover:bg-gray-300"
           >
             {isSidebarOpen ? (
               <ChevronLeft className="w-4 h-4" />
@@ -39,7 +39,7 @@ export default function WorkspaceLayout({ children }) {
         </div>
 
         {/* Pass sidebar state to children */}
-        <div className="p-4">{typeof children === "function" ? children({ isSidebarOpen }) : children}</div>
+        <div className="h-full">{typeof children === "function" ? children({ isSidebarOpen }) : children}</div>
       </div>
     </div>
   );

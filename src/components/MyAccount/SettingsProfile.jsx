@@ -62,7 +62,7 @@ const SettingsProfile = ({ user }) => {
   };
 
   return (
-    <section className="w-full max-w-xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-md border">
+    <section className="w-full max-w-xl mx-auto p-6 bg-white rounded-2xl shadow-md border">
       <div className="flex flex-col items-center gap-1">
         {/* Avatar upload */}
         <label

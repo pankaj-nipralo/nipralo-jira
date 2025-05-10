@@ -6,16 +6,16 @@ import WorkedOnList from "./WorkspaceUpdatesPanel";
 
 const projects = [
   {
-    title: "Customer Relationship Management System",
+    title: "Nipralo",
     description: "Team-managed software",
     workItems: { open: 3 },
-    slug: "customer-relationship-management-system",
+    slug: "nipralo",
   },
   {
-    title: "Ruby Print",
+    title: "ABS",
     description: "Team-managed software",
     workItems: { open: 0 },
-    slug: "ruby-print",
+    slug: "abc",
   },
 ];
 
@@ -116,7 +116,7 @@ const WorkspaceMaster = () => {
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-medium">Recent projects</h3>
         <a href="#" className="text-blue-600 text-sm hover:underline">
-          View all projects
+          Add Project
         </a>
       </div>
 

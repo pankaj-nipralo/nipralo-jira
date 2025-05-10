@@ -42,7 +42,7 @@ const ProjectSidebar = () => {
         {/* <Link href={`${url}`} className="text-gray-800 text-[18px] px-2 font-semibold">Workspace</Link> */}
         <button
           onClick={toggleDropdown}
-          className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-gray-100 transition"
+          className="w-full flex items-center justify-between px-3 py-2 rounded-md "
         >
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded bg-black text-white text-xs font-bold flex items-center justify-center">

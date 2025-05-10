@@ -16,38 +16,50 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const sidebarItems = [
-  { label: "Home", icon: Globe, href: "/" },
+  { label: "Home", icon: Globe, href: "workspace" },
   { label: "Summary", icon: Globe, href: "summary" },
-  { label: "Goals", icon: Goal, href: "goals" },
-  { label: "All work", icon: BarChart3, href: "all-work" },
   { label: "Team", icon: ListTodo, href: "team" },
   { label: "Reports", icon: LayoutList, href: "reports" },
   { label: "client", icon: Clock, href: "client" },
 ];
 
-const url = "http://localhost:3000/nipralo-jira/workspace";
+const url = "http://localhost:3000/nipralo-jira";
 
-// Mock projects
-const projects = [
-  { name: "warpp", key: "W" },
-  { name: "rocket", key: "R" },
-  { name: "zeno", key: "Z" },
+// Mock Workspace
+const Workspace = [
+  { name: "Home", key: "H", href: "workspace" },
+  { name: "rocket", key: "R", href: "workspace/rocket" },
+  { name: "zeno", key: "Z", href: "workspace/zeno" },
 ];
 
-const ProjectSidebar = () => {
+const WorkspaceSidebar = () => {
   const pathname = usePathname();
-  const [selectedProject, setSelectedProject] = useState(projects[0]);
+  const [selectedProject, setSelectedProject] = useState(Workspace[0]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const toggleDropdown = () => setDropdownOpen((prev) => !prev);
 
-  const handleProjectSelect = (project) => {
+  const handleWorkspaceelect = (project) => {
     setSelectedProject(project);
     setDropdownOpen(false);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <aside className="w-64 border-r bg-white h-full p-3 flex flex-col relative">
@@ -74,11 +86,15 @@ const ProjectSidebar = () => {
 
         {/* Dropdown */}
         {dropdownOpen && (
-          <div className="absolute mt-1 left-60 top-0 w-full bg-white text-black border rounded-md shadow z-50">
-            {projects.map((project) => (
-              <button
+          <div
+            ref={dropdownRef}
+            className="absolute mt-1 left-60 top-0 w-full bg-white text-black border rounded-md shadow z-50"
+          >
+            {Workspace.map((project) => (
+              <Link
+                href={`${url}/${project.href}`}
                 key={project.name}
-                onClick={() => handleProjectSelect(project)}
+                onClick={() => handleWorkspaceelect(project)}
                 className="flex items-center justify-between w-full px-3 py-2 hover:bg-gray-100 text-sm"
               >
                 <div className="flex items-center gap-2">
@@ -90,7 +106,7 @@ const ProjectSidebar = () => {
                 {selectedProject.name === project.name && (
                   <Check className="w-4 h-4 text-blue-500" />
                 )}
-              </button>
+              </Link>
             ))}
             <button className="w-full px-3 py-2 text-left text-sm text-gray-900 font-semibold hover:bg-gray-50 border-t">
               + Add Project
@@ -123,9 +139,8 @@ const ProjectSidebar = () => {
           );
         })}
       </div>
-
     </aside>
   );
 };
 
-export default ProjectSidebar;
+export default WorkspaceSidebar;

@@ -1,4 +1,4 @@
-import WorkspaceMaster from "@/components/workspace/WorkspaceMaster";
+import WorkspaceMaster from "@/components/home/WorkspaceMaster";
 
 
 export default function Workspace() {
