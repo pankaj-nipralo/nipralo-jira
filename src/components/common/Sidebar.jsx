@@ -13,7 +13,7 @@ const WorkspaceSidebarItems = [
   { label: "Client", icon: User, href: "client" },
 ];
 
-const url = "http://loacalhost:3000/nipralo-jira";
+const url = "http://localhost:3000/nipralo-jira";
 
 // Mock Workspace
 const Workspace = [

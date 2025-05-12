@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 
 const ClientTable = () => {
-  // State for clients data
   const [clients, setClients] = useState([
     {
       id: 1,
@@ -22,8 +21,8 @@ const ClientTable = () => {
       resourcePending: "Design Assets",
       summary: "Needs homepage mockups",
       resources: [
-        { id: 1, name: "UI Designe", date: 20, status: "Pending" },
-        { id: 2, name: "Content", date: 40, status: "Approved" },
+        { id: 1, name: "UI Design", date: "20 May 2025, 10:00 AM", status: "Pending" },
+        { id: 2, name: "Content", date: "21 May 2025, 02:00 PM", status: "Approved" },
       ],
       expanded: false,
       editing: false,
@@ -36,7 +35,7 @@ const ClientTable = () => {
       phone: "987-654-3210",
       resourcePending: "API Integration",
       summary: "Requires backend support",
-      resources: [{ id: 1, name: "Images", date: 30, status: "Pending" }],
+      resources: [{ id: 1, name: "Images", date: "22 May 2025, 09:00 AM", status: "Pending" }],
       expanded: false,
       editing: false,
       createdAt: "2025-05-07T05:51:46.595+00:00",
@@ -427,7 +426,7 @@ const ClientTable = () => {
                     <div className="flex space-x-2">
                       <button
                         onClick={() => toggleEdit(client.id)}
-                        className="text-blue-600 hover:text-blue-900 justify-self-center"
+                        className="text-gray-900 hover:text-gray-600 cursor-pointer justify-self-center"
                       >
                         {client.editing ? (
                           <Button className="cursor-pointer">Save</Button>
@@ -510,7 +509,7 @@ const ClientTable = () => {
                                   onChange={(e) =>
                                     setNewResource({
                                       ...newResource,
-                                      date: e.target.value ,
+                                      date: e.target.value,
                                     })
                                   }
                                   className="border rounded px-2 py-1"
