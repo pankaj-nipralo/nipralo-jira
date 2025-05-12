@@ -1,27 +1,14 @@
 "use client";
 
-import {
-  Globe,
-  ListTodo,
-  CalendarDays,
-  BarChart3,
-  ClipboardList,
-  Goal,
-  LayoutList,
-  Clock,
-  Plus,
-  ChevronDown,
-  Check,
-} from "lucide-react";
+import { Globe, LayoutList, Clock, ChevronDown, Check } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { useState, useRef, useEffect } from "react";
 
-const sidebarItems = [
+const WorkspaceSidebarItems = [
   { label: "Home", icon: Globe, href: "workspace" },
   { label: "Summary", icon: Globe, href: "summary" },
-  { label: "Team", icon: ListTodo, href: "team" },
   { label: "Reports", icon: LayoutList, href: "reports" },
   { label: "client", icon: Clock, href: "client" },
 ];
@@ -117,7 +104,7 @@ const WorkspaceSidebar = () => {
 
       {/* Sidebar Items */}
       <div className="flex-1 space-y-1">
-        {sidebarItems.map(({ label, icon: Icon, href }) => {
+        {WorkspaceSidebarItems.map(({ label, icon: Icon, href }) => {
           const active =
             href === "/"
               ? pathname === "/nipralo-jira/workspace"

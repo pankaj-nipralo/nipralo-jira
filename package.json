@@ -26,6 +26,7 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.56.3",
     "react-icons": "^5.5.0",
+    "recharts": "^2.15.3",
     "shadcn": "^2.5.0",
     "sonner": "^2.0.3",
     "tabs": "^0.2.0",
