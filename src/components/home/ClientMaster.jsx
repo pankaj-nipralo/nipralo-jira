@@ -1,10 +1,13 @@
 import React from 'react'
+import ClientHeader from './client/ClientHeader'
+import ClientTable from './client/clientBody'
 
 const ClientMaster = () => {
   return (
-    <div>
-      ClientMaster
-    </div>
+  <>
+    {/* <ClientHeader /> */}
+    <ClientTable />
+  </>
   )
 }
 

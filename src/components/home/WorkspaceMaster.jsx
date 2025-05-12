@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
 
-import WorkspaceCard from "./WorkspcaeCard";
-import WorkedOnList from "./WorkspaceUpdatesPanel";
+import WorkspaceCard from "./workspace/WorkspcaeCard";
+import WorkedOnList from "./workspace/WorkspaceUpdatesPanel";
 
 const projects = [
   {

@@ -1,19 +1,19 @@
 "use client";
 
-import { Globe, LayoutList, Clock, ChevronDown, Check } from "lucide-react";
+import { ChevronDown, Check, Home, FileText, BarChart2, User  } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { useState, useRef, useEffect } from "react";
 
 const WorkspaceSidebarItems = [
-  { label: "Home", icon: Globe, href: "workspace" },
-  { label: "Summary", icon: Globe, href: "summary" },
-  { label: "Reports", icon: LayoutList, href: "reports" },
-  { label: "client", icon: Clock, href: "client" },
+  { label: "Home", icon: Home, href: "workspace" },
+  { label: "Summary", icon: FileText, href: "summary" },
+  { label: "Reports", icon: BarChart2, href: "reports" },
+  { label: "Client", icon: User, href: "client" },
 ];
 
-const url = "http://localhost:3000/nipralo-jira";
+const url = "http://loacalhost:3000/nipralo-jira";
 
 // Mock Workspace
 const Workspace = [

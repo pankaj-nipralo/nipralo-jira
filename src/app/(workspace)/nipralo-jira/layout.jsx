@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import WorkspaceSidebar from "@/components/home/Sidebar";
+import WorkspaceSidebar from "@/components/common/Sidebar";
 
 export default function WorkspaceLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
