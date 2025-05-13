@@ -10,19 +10,33 @@ import {
   ChevronUp,
   Plus,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const ClientTable = () => {
+  const router = useRouter();
+
   const [clients, setClients] = useState([
     {
       id: 1,
       name: "John Doe",
+      slug: "john-doe",
       project: "Website Redesign",
       phone: "123-456-7890",
       resourcePending: "Design Assets",
       summary: "Needs homepage mockups",
       resources: [
-        { id: 1, name: "UI Design", date: "20 May 2025, 10:00 AM", status: "Pending" },
-        { id: 2, name: "Content", date: "21 May 2025, 02:00 PM", status: "Approved" },
+        {
+          id: 1,
+          name: "UI Design",
+          date: "20 May 2025, 10:00 AM",
+          status: "Pending",
+        },
+        {
+          id: 2,
+          name: "Content",
+          date: "21 May 2025, 02:00 PM",
+          status: "Approved",
+        },
       ],
       expanded: false,
       editing: false,
@@ -31,11 +45,19 @@ const ClientTable = () => {
     {
       id: 2,
       name: "Jane Smith",
+      slug: "jane-smith",
       project: "Mobile App",
       phone: "987-654-3210",
       resourcePending: "API Integration",
       summary: "Requires backend support",
-      resources: [{ id: 1, name: "Images", date: "22 May 2025, 09:00 AM", status: "Pending" }],
+      resources: [
+        {
+          id: 1,
+          name: "Images",
+          date: "22 May 2025, 09:00 AM",
+          status: "Pending",
+        },
+      ],
       expanded: false,
       editing: false,
       createdAt: "2025-05-07T05:51:46.595+00:00",
@@ -330,10 +352,7 @@ const ClientTable = () => {
                     onClick={() => toggleExpand(client.id)}
                   >
                     <div className="flex items-center">
-                      <button
-                        // onClick={() => toggleExpand(client.id)}
-                        className="mr-2 text-gray-500 hover:text-gray-700"
-                      >
+                      <button className="mr-2 text-gray-500 hover:text-gray-700">
                         {client.expanded ? (
                           <ChevronUp size={16} />
                         ) : (
@@ -424,14 +443,28 @@ const ClientTable = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex justify-center items-center">
                     <div className="flex space-x-2">
-                      <button
-                        onClick={() => toggleEdit(client.id)}
-                        className="text-gray-900 hover:text-gray-600 cursor-pointer justify-self-center"
-                      >
+                      <button className="text-gray-900 hover:text-gray-600 cursor-pointer justify-self-center">
                         {client.editing ? (
-                          <Button className="cursor-pointer">Save</Button>
+                          <>
+                            <Button className="cursor-pointer"  onClick={() => toggleEdit(client.id)}>Save</Button>
+                          </>
                         ) : (
-                          <Edit size={22} />
+                          <div className="flex gap-2 justify-center items-center">
+                            <Edit
+                              size={22}
+                              onClick={() => toggleEdit(client.id)}
+                            />
+                            <Button
+                              className="cursor-pointer"
+                              onClick={() =>
+                                router.push(
+                                  `/nipralo-jira/client/${client.slug}`
+                                )
+                              }
+                            >
+                              Details
+                            </Button>
+                          </div>
                         )}
                       </button>
                       {isSuperAdmin && (

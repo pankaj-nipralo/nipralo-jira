@@ -13,7 +13,7 @@ const Header = () => {
   const [isAuthPage, setIsAuthPage] = useState(false);
   const [isInProject, setIsInProject] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const url = "http://localhost:3000";
+  const url = "http://localhost:3000/nipralo-jira/";
 
   useEffect(() => {
     const hideOnRoutes = [
@@ -27,15 +27,18 @@ const Header = () => {
 
     const navHide = [
       ...hideOnRoutes,
-      "/nipralo-jira/workspace",
     ];
     setIsInProject(!navHide.includes(pathname));
+
+    // No need to check for client detail page anymore
   }, [pathname]);
 
+  // Main navigation items - these are the only ones we want to show
   const navItems = [
-    { label: "Home", href: `${url}/nipralo-jira/workspace` },
-    { label: "Board", href: `${pathname}/nipralo-jira/workspace/` },
-    { label: "Reports", href: `${pathname}/reports` },
+    { label: "Home", href: `${url}workspace` },
+    { label: "Summary", href: `${url}summary` },
+    { label: "Reports", href: `${url}reports` },
+    { label: "Client", href: `${url}client` },
   ];
 
   return (

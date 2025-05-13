@@ -1,21 +1,21 @@
 "use client";
-import React from "react";
-
+import React, { useState } from "react";
 import WorkspaceCard from "./workspace/WorkspcaeCard";
-import WorkedOnList from "./workspace/WorkspaceUpdatesPanel";
+import WorkspaceUpdatesPanel from "./workspace/WorkspaceUpdatesPanel";
+import AddProjectModal from "./workspace/AddProjectModal";
 
-const projects = [
+const initialProjects = [
   {
-    title: "Nipralo",
+    title: "Ruby Print",
     description: "Team-managed software",
     workItems: { open: 3 },
-    slug: "nipralo",
+    slug: "ruby-print",
   },
   {
-    title: "ABS",
+    title: "Warpp",
     description: "Team-managed software",
     workItems: { open: 0 },
-    slug: "abc",
+    slug: "warpp",
   },
 ];
 
@@ -109,24 +109,52 @@ const recentActivity = [
 ];
 
 const WorkspaceMaster = () => {
+  const [projects, setProjects] = useState(initialProjects);
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  const handleAddProject = (newProject) => {
+    setProjects([...projects, newProject]);
+  };
+
   return (
-    <div className="p-4 max-w-screen-xl mx-auto ">
-      <h2 className="text-2xl font-semibold mb-6">Your work</h2>
-
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-lg font-medium">Recent projects</h3>
-        <a href="#" className="text-blue-600 text-sm hover:underline">
-          Add Project
-        </a>
+    <div className="p-6 max-w-screen-2xl mx-auto">
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-3xl font-bold text-gray-900">Your Workspace</h2>
       </div>
 
-      <div className="flex flex-wrap gap-4">
-        {projects.map((project, index) => (
-          <WorkspaceCard key={index} {...project} />
-        ))}
+      <div className="mb-12">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-semibold text-gray-800">Recent Projects</h3>
+          <div className="flex gap-4">
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="px-4 py-2 bg-gray-800 cursor-pointer text-white rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              Add Project
+            </button>
+            <a 
+              href="/all-projects" 
+              className="px-4 py-2 text-gray-600 hover:text-gray-900 border rounded-lg transition-colors"
+            >
+              View All Projects
+            </a>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {projects.map((project) => (
+            <WorkspaceCard key={project.slug} {...project} />
+          ))}
+        </div>
       </div>
 
-      <WorkedOnList items={recentActivity} />
+      <AddProjectModal 
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onAddProject={handleAddProject}
+      />
+
+      <WorkspaceUpdatesPanel items={recentActivity} />
     </div>
   );
 };
