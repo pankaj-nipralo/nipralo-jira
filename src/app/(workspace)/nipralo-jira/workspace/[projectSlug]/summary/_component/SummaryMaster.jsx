@@ -19,7 +19,7 @@ const data = [
   { title: "Issues Resolved", number: 97, icon: CheckCircle2 },
   { title: "In Progress", number: 32, icon: ListChecks },
   { title: "Time Spent (hrs)", number: 86, icon: Clock },
-  { title: "Active Users", number: 14, icon: Users },
+  { title: "Active Users", number: 12, icon: Users },
   { title: "Open Bugs", number: 19, icon: Bug },
 ];
 

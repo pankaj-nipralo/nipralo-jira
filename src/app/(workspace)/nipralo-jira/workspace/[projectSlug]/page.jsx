@@ -24,7 +24,7 @@ const ProjectDashboard = () => {
     // Mock project data - in a real app, you would fetch this from an API
     const mockProject = {
       id: projectSlug,
-      name: `Project ${projectSlug}`,
+      name: `${projectSlug}`,
       description: "A comprehensive project management system with task tracking and team collaboration features.",
       status: "In Progress",
       progress: 65,

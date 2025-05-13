@@ -1,9 +1,9 @@
-import React from 'react'
+import SummaryMaster from './_component/SummaryMaster'
 
 const Summary = () => {
   return (
     <div>
-      Summary 
+      <SummaryMaster />
     </div>
   )
 }

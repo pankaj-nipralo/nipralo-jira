@@ -4,16 +4,19 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-  Plus, 
-  Mail, 
-  Phone, 
-  Calendar, 
+import {
+  Plus,
+  Mail,
+  Phone,
+  Calendar,
   BarChart2,
   CheckCircle,
   Clock,
   Search
 } from "lucide-react";
+import AddMemberModal from '@/components/team/AddMemberModal';
+import MemberProfileModal from '@/components/team/MemberProfileModal';
+import EditMemberModal from '@/components/team/EditMemberModal';
 
 const ProjectTeam = () => {
   const params = useParams();
@@ -22,12 +25,18 @@ const ProjectTeam = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Modal states
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState(null);
+
   useEffect(() => {
     // Mock team data - in a real app, you would fetch this from an API
     const mockTeam = [
-      { 
-        id: 1, 
-        name: "John Doe", 
+      {
+        id: 1,
+        name: "John Doe",
         role: "Project Manager",
         email: "john.doe@example.com",
         phone: "+1 (555) 123-4567",
@@ -38,9 +47,9 @@ const ProjectTeam = () => {
         skills: ["Project Management", "Agile", "Leadership"],
         availability: "Full-time"
       },
-      { 
-        id: 2, 
-        name: "Jane Smith", 
+      {
+        id: 2,
+        name: "Jane Smith",
         role: "UI/UX Designer",
         email: "jane.smith@example.com",
         phone: "+1 (555) 234-5678",
@@ -51,9 +60,9 @@ const ProjectTeam = () => {
         skills: ["UI Design", "Wireframing", "Prototyping", "Figma"],
         availability: "Full-time"
       },
-      { 
-        id: 3, 
-        name: "Mike Johnson", 
+      {
+        id: 3,
+        name: "Mike Johnson",
         role: "Senior Developer",
         email: "mike.johnson@example.com",
         phone: "+1 (555) 345-6789",
@@ -64,9 +73,9 @@ const ProjectTeam = () => {
         skills: ["JavaScript", "React", "Node.js", "MongoDB"],
         availability: "Full-time"
       },
-      { 
-        id: 4, 
-        name: "Sarah Williams", 
+      {
+        id: 4,
+        name: "Sarah Williams",
         role: "QA Engineer",
         email: "sarah.williams@example.com",
         phone: "+1 (555) 456-7890",
@@ -77,9 +86,9 @@ const ProjectTeam = () => {
         skills: ["Test Automation", "Manual Testing", "QA Processes"],
         availability: "Part-time"
       },
-      { 
-        id: 5, 
-        name: "David Brown", 
+      {
+        id: 5,
+        name: "David Brown",
         role: "Backend Developer",
         email: "david.brown@example.com",
         phone: "+1 (555) 567-8901",
@@ -99,7 +108,7 @@ const ProjectTeam = () => {
     }, 500);
   }, [projectSlug]);
 
-  const filteredTeam = team.filter(member => 
+  const filteredTeam = team.filter(member =>
     member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     member.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
     member.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -113,7 +122,7 @@ const ProjectTeam = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Team for {projectSlug}</h1>
-        <Button>
+        <Button onClick={() => setIsAddModalOpen(true)}>
           <Plus className="h-4 w-4 mr-2" /> Add Team Member
         </Button>
       </div>
@@ -167,10 +176,10 @@ const ProjectTeam = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {team.filter(member => member.availability === 'Full-time').length} Full-time
+              {team.filter(member => member.availability === 'Full-time').length}
             </div>
             <div className="text-sm text-gray-500">
-              {team.filter(member => member.availability === 'Part-time').length} Part-time
+              {team.filter(member => member.availability === 'Part-time').length}
             </div>
           </CardContent>
         </Card>
@@ -200,20 +209,38 @@ const ProjectTeam = () => {
                         <p className="text-gray-500">{member.role}</p>
                       </div>
                     </div>
-                    
+
                     <div className="flex flex-wrap gap-2">
-                      <Button size="sm" variant="outline" className="h-8">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-8"
+                        onClick={() => window.location.href = `mailto:${member.email}`}
+                      >
                         <Mail className="h-4 w-4 mr-1" /> Email
                       </Button>
-                      <Button size="sm" variant="outline" className="h-8">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-8"
+                        onClick={() => window.location.href = `tel:${member.phone}`}
+                      >
                         <Phone className="h-4 w-4 mr-1" /> Call
                       </Button>
-                      <Button size="sm" variant="outline" className="h-8">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-8"
+                        onClick={() => {
+                          setSelectedMember(member);
+                          setIsProfileModalOpen(true);
+                        }}
+                      >
                         View Profile
                       </Button>
                     </div>
                   </div>
-                  
+
                   <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <div className="text-sm text-gray-500">Contact</div>
@@ -228,7 +255,7 @@ const ProjectTeam = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div>
                       <div className="text-sm text-gray-500">Tasks</div>
                       <div className="mt-1">
@@ -242,7 +269,7 @@ const ProjectTeam = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div>
                       <div className="text-sm text-gray-500">Info</div>
                       <div className="mt-1">
@@ -257,7 +284,7 @@ const ProjectTeam = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="mt-4">
                     <div className="text-sm text-gray-500 mb-2">Skills</div>
                     <div className="flex flex-wrap gap-2">
@@ -274,6 +301,40 @@ const ProjectTeam = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Add Member Modal */}
+      <AddMemberModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAddMember={(newMember) => {
+          setTeam([...team, newMember]);
+        }}
+      />
+
+      {/* View Profile Modal */}
+      <MemberProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        member={selectedMember}
+        onEdit={(member) => {
+          setIsProfileModalOpen(false);
+          setSelectedMember(member);
+          setIsEditModalOpen(true);
+        }}
+        onDelete={(memberId) => {
+          setTeam(team.filter(m => m.id !== memberId));
+        }}
+      />
+
+      {/* Edit Member Modal */}
+      <EditMemberModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        member={selectedMember}
+        onUpdateMember={(updatedMember) => {
+          setTeam(team.map(m => m.id === updatedMember.id ? updatedMember : m));
+        }}
+      />
     </div>
   );
 };
