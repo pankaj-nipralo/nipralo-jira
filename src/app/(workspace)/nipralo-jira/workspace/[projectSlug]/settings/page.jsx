@@ -10,10 +10,13 @@ import {
   Trash2,
   AlertTriangle,
   Users,
-  Bell,
-  Palette,
-  FileText
+  FileText,
+  Edit,
+  UserPlus
+  // Bell,
+  // Palette
 } from "lucide-react";
+import AddMemberModal from '@/components/settings/AddMemberModal';
 
 const ProjectSettings = () => {
   const params = useParams();
@@ -22,6 +25,7 @@ const ProjectSettings = () => {
   const [loading, setLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState("general");
+  const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
 
   useEffect(() => {
     // Mock project data - in a real app, you would fetch this from an API
@@ -82,6 +86,8 @@ const ProjectSettings = () => {
     alert("Project members updated successfully!");
   };
 
+  // Commented out notification and appearance handlers
+  /*
   const handleUpdateNotifications = (updatedSettings) => {
     setProject({
       ...project,
@@ -99,6 +105,7 @@ const ProjectSettings = () => {
     // In a real app, you would save this to the backend
     alert("Appearance settings updated successfully!");
   };
+  */
 
   const handleDeleteProject = () => {
     // In a real app, you would delete the project from the backend
@@ -114,12 +121,12 @@ const ProjectSettings = () => {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Settings for {project.name}</h1>
-        <p className="text-gray-500">Manage your project settings, members, and preferences</p>
+        <h1 className="text-xl md:text-2xl font-bold">Settings for {project.name}</h1>
+        <p className="text-sm md:text-base text-gray-500">Manage your project settings, members, and preferences</p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="mb-6 grid grid-cols-2 md:grid-cols-4 gap-2">
+        <TabsList className="mb-6 flex flex-wrap gap-2 overflow-x-auto">
           <TabsTrigger value="general" className="flex items-center">
             <FileText className="h-4 w-4 mr-2" />
             <span>General</span>
@@ -128,14 +135,16 @@ const ProjectSettings = () => {
             <Users className="h-4 w-4 mr-2" />
             <span>Members</span>
           </TabsTrigger>
+          {/* Commented out notification and appearance tabs
           <TabsTrigger value="notifications" className="flex items-center">
             <Bell className="h-4 w-4 mr-2" />
             <span>Notifications</span>
           </TabsTrigger>
-          {/* <TabsTrigger value="appearance" className="flex items-center">
+          <TabsTrigger value="appearance" className="flex items-center">
             <Palette className="h-4 w-4 mr-2" />
             <span>Appearance</span>
-          </TabsTrigger> */}
+          </TabsTrigger>
+          */}
         </TabsList>
 
         <TabsContent value="general">
@@ -263,22 +272,14 @@ const ProjectSettings = () => {
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <h3 className="text-lg font-medium">Members ({project.members.length})</h3>
-                  <Button onClick={() => {
-                    const newMember = {
-                      id: Date.now(),
-                      name: "New Member",
-                      email: "new.member@example.com",
-                      role: "Member",
-                      avatar: "NM"
-                    };
-                    handleUpdateMembers([...project.members, newMember]);
-                  }}>
-                    <Users className="h-4 w-4 mr-2" />
-                    Invite Members
+                  <Button onClick={() => setIsAddMemberModalOpen(true)}>
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Add Member
                   </Button>
                 </div>
 
-                <div className="border rounded-md overflow-hidden">
+                {/* Responsive table for larger screens */}
+                <div className="hidden md:block border rounded-md overflow-hidden">
                   <table className="w-full">
                     <thead className="bg-gray-50">
                       <tr>
@@ -312,21 +313,25 @@ const ProjectSettings = () => {
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             <div className="flex space-x-2">
                               <button
-                                className="text-blue-600 hover:text-blue-900"
+                                className="flex items-center text-blue-600 hover:text-blue-900"
                                 onClick={() => {
                                   const updatedMember = {...member, role: member.role === 'Admin' ? 'Member' : 'Admin'};
                                   handleUpdateMembers(project.members.map(m => m.id === member.id ? updatedMember : m));
                                 }}
                               >
+                                <Edit className="h-3.5 w-3.5 mr-1" />
                                 {member.role === 'Admin' ? 'Make Member' : 'Make Admin'}
                               </button>
                               {member.role !== 'Admin' && (
                                 <button
-                                  className="text-red-600 hover:text-red-900"
+                                  className="flex items-center text-red-600 hover:text-red-900"
                                   onClick={() => {
-                                    handleUpdateMembers(project.members.filter(m => m.id !== member.id));
+                                    if (window.confirm(`Are you sure you want to remove ${member.name} from the project?`)) {
+                                      handleUpdateMembers(project.members.filter(m => m.id !== member.id));
+                                    }
                                   }}
                                 >
+                                  <Trash2 className="h-3.5 w-3.5 mr-1" />
                                   Remove
                                 </button>
                               )}
@@ -337,11 +342,63 @@ const ProjectSettings = () => {
                     </tbody>
                   </table>
                 </div>
+
+                {/* Card layout for mobile screens */}
+                <div className="md:hidden space-y-4">
+                  {project.members.map((member) => (
+                    <div key={member.id} className="border rounded-md p-4">
+                      <div className="flex items-center mb-3">
+                        <div className="w-10 h-10 rounded-full bg-purple-100 text-purple-600 text-sm font-bold flex items-center justify-center mr-3">
+                          {member.avatar}
+                        </div>
+                        <div>
+                          <div className="font-medium">{member.name}</div>
+                          <div className="text-sm text-gray-500">{member.email}</div>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          member.role === 'Admin' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'
+                        }`}>
+                          {member.role}
+                        </span>
+
+                        <div className="flex space-x-3">
+                          <button
+                            className="flex items-center text-blue-600 hover:text-blue-900 text-sm"
+                            onClick={() => {
+                              const updatedMember = {...member, role: member.role === 'Admin' ? 'Member' : 'Admin'};
+                              handleUpdateMembers(project.members.map(m => m.id === member.id ? updatedMember : m));
+                            }}
+                          >
+                            <Edit className="h-3 w-3 mr-1" />
+                            {member.role === 'Admin' ? 'Make Member' : 'Make Admin'}
+                          </button>
+                          {member.role !== 'Admin' && (
+                            <button
+                              className="flex items-center text-red-600 hover:text-red-900 text-sm"
+                              onClick={() => {
+                                if (window.confirm(`Are you sure you want to remove ${member.name} from the project?`)) {
+                                  handleUpdateMembers(project.members.filter(m => m.id !== member.id));
+                                }
+                              }}
+                            >
+                              <Trash2 className="h-3 w-3 mr-1" />
+                              Remove
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
+        {/* Commented out notification and appearance tabs
         <TabsContent value="notifications">
           <Card>
             <CardHeader>
@@ -378,84 +435,6 @@ const ProjectSettings = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between py-3 border-b">
-                  <div>
-                    <h3 className="font-medium">Task Assignments</h3>
-                    <p className="text-sm text-gray-500">When you are assigned to a task</p>
-                  </div>
-                  <div className="flex items-center">
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="sr-only peer"
-                        checked={project.notificationSettings.taskAssignments}
-                        onChange={() => {
-                          setProject({
-                            ...project,
-                            notificationSettings: {
-                              ...project.notificationSettings,
-                              taskAssignments: !project.notificationSettings.taskAssignments
-                            }
-                          });
-                        }}
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                    </label>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between py-3 border-b">
-                  <div>
-                    <h3 className="font-medium">Task Comments</h3>
-                    <p className="text-sm text-gray-500">When someone comments on your tasks</p>
-                  </div>
-                  <div className="flex items-center">
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="sr-only peer"
-                        checked={project.notificationSettings.taskComments}
-                        onChange={() => {
-                          setProject({
-                            ...project,
-                            notificationSettings: {
-                              ...project.notificationSettings,
-                              taskComments: !project.notificationSettings.taskComments
-                            }
-                          });
-                        }}
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                    </label>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between py-3 border-b">
-                  <div>
-                    <h3 className="font-medium">Status Changes</h3>
-                    <p className="text-sm text-gray-500">When task status changes</p>
-                  </div>
-                  <div className="flex items-center">
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="sr-only peer"
-                        checked={project.notificationSettings.statusChanges}
-                        onChange={() => {
-                          setProject({
-                            ...project,
-                            notificationSettings: {
-                              ...project.notificationSettings,
-                              statusChanges: !project.notificationSettings.statusChanges
-                            }
-                          });
-                        }}
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                    </label>
-                  </div>
-                </div>
-
                 <div className="flex justify-end">
                   <Button onClick={() => handleUpdateNotifications(project.notificationSettings)}>
                     <Save className="h-4 w-4 mr-2" />
@@ -479,7 +458,7 @@ const ProjectSettings = () => {
               <div className="space-y-6">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Theme</label>
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <div
                       className={`border rounded-md p-4 cursor-pointer ${project.appearance.theme === 'light' ? 'border-purple-500 bg-purple-50' : ''}`}
                       onClick={() => setProject({
@@ -506,91 +485,6 @@ const ProjectSettings = () => {
                       <div className="h-20 bg-gray-800 border rounded-md mb-2"></div>
                       <div className="text-center">Dark</div>
                     </div>
-                    <div
-                      className={`border rounded-md p-4 cursor-pointer ${project.appearance.theme === 'system' ? 'border-purple-500 bg-purple-50' : ''}`}
-                      onClick={() => setProject({
-                        ...project,
-                        appearance: {
-                          ...project.appearance,
-                          theme: 'system'
-                        }
-                      })}
-                    >
-                      <div className="h-20 bg-gradient-to-r from-white to-gray-800 border rounded-md mb-2"></div>
-                      <div className="text-center">System</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Accent Color</label>
-                  <div className="grid grid-cols-6 gap-4">
-                    {['#6366F1', '#8B5CF6', '#EC4899', '#F43F5E', '#F59E0B', '#10B981'].map(color => (
-                      <div
-                        key={color}
-                        className={`h-10 rounded-md cursor-pointer ${project.appearance.accentColor === color ? 'ring-2 ring-offset-2 ring-gray-400' : ''}`}
-                        style={{ backgroundColor: color }}
-                        onClick={() => setProject({
-                          ...project,
-                          appearance: {
-                            ...project.appearance,
-                            accentColor: color
-                          }
-                        })}
-                      ></div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between py-3 border-b">
-                  <div>
-                    <h3 className="font-medium">Compact View</h3>
-                    <p className="text-sm text-gray-500">Use a more compact layout</p>
-                  </div>
-                  <div className="flex items-center">
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="sr-only peer"
-                        checked={project.appearance.compactView}
-                        onChange={() => {
-                          setProject({
-                            ...project,
-                            appearance: {
-                              ...project.appearance,
-                              compactView: !project.appearance.compactView
-                            }
-                          });
-                        }}
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                    </label>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between py-3 border-b">
-                  <div>
-                    <h3 className="font-medium">Show Avatars</h3>
-                    <p className="text-sm text-gray-500">Display user avatars in the interface</p>
-                  </div>
-                  <div className="flex items-center">
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="sr-only peer"
-                        checked={project.appearance.showAvatars}
-                        onChange={() => {
-                          setProject({
-                            ...project,
-                            appearance: {
-                              ...project.appearance,
-                              showAvatars: !project.appearance.showAvatars
-                            }
-                          });
-                        }}
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                    </label>
                   </div>
                 </div>
 
@@ -604,7 +498,17 @@ const ProjectSettings = () => {
             </CardContent>
           </Card>
         </TabsContent>
+        */}
       </Tabs>
+
+      {/* Add Member Modal */}
+      <AddMemberModal
+        isOpen={isAddMemberModalOpen}
+        onClose={() => setIsAddMemberModalOpen(false)}
+        onAddMember={(newMember) => {
+          handleUpdateMembers([...project.members, newMember]);
+        }}
+      />
     </div>
   );
 };
