@@ -71,7 +71,7 @@ const ClientTable = () => {
     date: "",
     status: "Pending",
   });
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false); // Will be set based on auth later
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);  // Will be set based on auth later.......................................................................
   const [showAddClientModal, setShowAddClientModal] = useState(false);
   const [newClient, setNewClient] = useState({
     name: "",
