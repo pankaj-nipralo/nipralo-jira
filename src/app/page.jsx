@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ChevronRight,
@@ -18,20 +18,32 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { faqs, features } from "@/data/dataHub";
-// import Header from "@/components/common/Header2";
 
 export default function Home() {
+  const [homeData, setHomeData] = useState([]);
 
-  
+  useEffect(() => {
+    async function getHomeData() {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}banners?populate[bg_image][fields]=url`
+      );
+      const data = await res.json();
+      setHomeData(data);
+    }
+
+    getHomeData();
+  }, []);
+  console.log(homeData);
+
+  if (!homeData) return <div>Loading banner...</div>;
+
   return (
     <>
-      {/* <Header /> */}
       <div className="min-h-screen text-white">
         {/* Hero Section */}
         <section className="container mx-auto py-20 text-center">
           <h1 className="text-6xl sm:text-7xl lg:text-8xl font-extrabold gradient-title pb-6 flex flex-col text-black">
-            Streamline Your Workflow <br />
-            with Nipralo
+            {homeData.data?.[0]?.main_heading}
           </h1>
           <p className="text-xl text-gray-500 mb-10 max-w-3xl mx-auto">
             Empower your team with our intuitive project management solution.
