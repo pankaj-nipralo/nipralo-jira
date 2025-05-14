@@ -45,7 +45,7 @@ const ProjectSidebar = () => {
       projectSlug = match[1];
     }
   }
-  const baseUrl = "http://localhost:3000/nipralo-jira/workspace";
+  const baseUrl = "/nipralo-jira/workspace";
 
   return (
     <aside className="w-16 md:w-64 border-r bg-white h-full p-3 flex flex-col relative transition-all duration-300">
