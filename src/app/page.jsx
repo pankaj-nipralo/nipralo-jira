@@ -21,6 +21,8 @@ import { faqs, features } from "@/data/dataHub";
 // import Header from "@/components/common/Header2";
 
 export default function Home() {
+
+  
   return (
     <>
       {/* <Header /> */}
