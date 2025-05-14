@@ -1314,7 +1314,8 @@ const WorkItemDetails = ({ item, onClose, onUpdate }) => {
                       onChange={handleFileUpload}
                       disabled={isUploading}
                     />
-                    <Button variant="outline" size="sm" disabled={isUploading}>
+                    <Button variant="outline" size="sm" 
+                    disabled={isUploading}>
                       <ImageIcon className="h-4 w-4 mr-1" /> Add Image
                     </Button>
                   </label>
