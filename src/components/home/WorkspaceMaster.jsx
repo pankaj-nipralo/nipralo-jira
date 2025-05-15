@@ -1,10 +1,22 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import WorkspaceCard from "./workspace/WorkspcaeCard";
 import WorkspaceUpdatesPanel from "./workspace/WorkspaceUpdatesPanel";
 import AddProjectModal from "./workspace/AddProjectModal";
 
 const initialProjects = [
+  {
+    title: "Ruby Print",
+    description: "Team-managed software",
+    workItems: { open: 3 },
+    slug: "ruby-print",
+  },
+  {
+    title: "Warpp",
+    description: "Team-managed software",
+    workItems: { open: 0 },
+    slug: "warpp",
+  },
   {
     title: "Ruby Print",
     description: "Team-managed software",
@@ -111,10 +123,19 @@ const recentActivity = [
 const WorkspaceMaster = () => {
   const [projects, setProjects] = useState(initialProjects);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [sliceProjects, setSliceProjects] = useState([]);
 
   const handleAddProject = (newProject) => {
     setProjects([...projects, newProject]);
   };
+
+  const handleSliceProjects = (projects) => {
+    setSliceProjects(projects.slice(0, 3));
+  };
+
+  useEffect(() => {
+    handleSliceProjects(projects);
+  }, [projects]);
 
   return (
     <div className="p-6 max-w-screen-2xl mx-auto">
@@ -133,7 +154,7 @@ const WorkspaceMaster = () => {
               Add Project
             </button>
             <a 
-              href="/all-projects" 
+              href="/nipralo-jira/all-projects" 
               className="px-4 py-2 text-gray-600 hover:text-gray-900 border rounded-lg transition-colors"
             >
               View All Projects
@@ -142,7 +163,7 @@ const WorkspaceMaster = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((project) => (
+          {sliceProjects.map((project) => (
             <WorkspaceCard key={project.slug} {...project} />
           ))}
         </div>

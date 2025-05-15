@@ -26,9 +26,7 @@ const Header = () => {
     ];
     setIsAuthPage(hideOnRoutes.includes(pathname));
 
-    const navHide = [
-      ...hideOnRoutes,
-    ];
+    const navHide = [...hideOnRoutes];
     setIsInProject(!navHide.includes(pathname));
 
     // No need to check for client detail page anymore
@@ -38,7 +36,9 @@ const Header = () => {
   const navItems = [
     { label: "Home", href: `${url}workspace` },
     { label: "Summary", href: `${url}summary` },
+    { label: "Projects", href: `${url}all-projects` },
     { label: "Reports", href: `${url}reports` },
+    { label: "Time Tracking", href: `${url}time-tracking` },
     { label: "Client", href: `${url}client` },
   ];
 

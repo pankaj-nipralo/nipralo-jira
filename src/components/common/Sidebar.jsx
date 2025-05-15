@@ -1,6 +1,14 @@
 "use client";
 
-import { ChevronDown, Check, Home, FileText, BarChart2, User  } from "lucide-react";
+import {
+  ChevronDown,
+  Check,
+  Home,
+  FileText,
+  BarChart2,
+  Clock,
+  User,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
@@ -11,16 +19,17 @@ const WorkspaceSidebarItems = [
   { label: "Home", icon: Home, href: "workspace" },
   { label: "Summary", icon: FileText, href: "summary" },
   { label: "Reports", icon: BarChart2, href: "reports" },
+  { label: "Time Tracking", icon: Clock, href: "time-tracking" },
   { label: "Client", icon: User, href: "client" },
 ];
 
-const url = `${SITE_URL}/nipralo-jira`;;
+const url = `${SITE_URL}/nipralo-jira`;
 
 // Mock Workspace
 const Workspace = [
   { name: "Home", key: "H", href: "workspace" },
-  { name: "rocket", key: "R", href: "workspace/rocket" },
-  { name: "zeno", key: "Z", href: "workspace/zeno" },
+  { name: "ruby print", key: "R", href: "workspace/ruby-print" },
+  { name: "warpp", key: "Z", href: "workspace/warpp" }, 
 ];
 
 const WorkspaceSidebar = () => {
@@ -96,9 +105,11 @@ const WorkspaceSidebar = () => {
                 )}
               </Link>
             ))}
-            <button className="w-full px-3 py-2 text-left text-sm text-gray-900 font-semibold hover:bg-gray-50 border-t">
-              + Add Project
-            </button>
+            <a href="/nipralo-jira/all-projects">
+              <button className="w-full px-3 py-2 text-left text-sm text-gray-900 font-semibold hover:bg-gray-50 border-t">
+                All Project
+              </button>
+            </a>
           </div>
         )}
       </div>

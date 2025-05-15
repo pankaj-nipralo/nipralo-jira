@@ -26,6 +26,9 @@ import BacklogItem from "@/components/backlog/BacklogItem";
 import AddBacklogItemModal from "@/components/backlog/AddBacklogItemModal";
 import EditBacklogItemModal from "@/components/backlog/EditBacklogItemModal";
 import EmptySprintDropTarget from "@/components/backlog/EmptySprintDropTarget";
+import CreateSprintModal from "@/components/backlog/CreateSprintModal";
+import EditSprintModal from "@/components/backlog/EditSprintModal";
+import CompleteSprintModal from "@/components/backlog/CompleteSprintModal";
 
 const BacklogPage = () => {
   const params = useParams();
@@ -45,9 +48,9 @@ const BacklogPage = () => {
 
   // State for sprint management
   const [isCreateSprintModalOpen, setIsCreateSprintModalOpen] = useState(false);
+  const [isEditSprintModalOpen, setIsEditSprintModalOpen] = useState(false);
   const [isStartSprintModalOpen, setIsStartSprintModalOpen] = useState(false);
-  const [isCompleteSprintModalOpen, setIsCompleteSprintModalOpen] =
-    useState(false);
+  const [isCompleteSprintModalOpen, setIsCompleteSprintModalOpen] = useState(false);
   const [selectedSprint, setSelectedSprint] = useState(null);
 
   // State for epic management
@@ -87,7 +90,7 @@ const BacklogPage = () => {
       setExpandedSprints({ ...initialExpandedState, backlog: true });
 
       setLoading(false);
-    }, 500);
+    }, 100);
   }, [projectSlug]);
 
   // Handle search, epic, and user filtering
@@ -735,7 +738,6 @@ const BacklogPage = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="p-4 max-w-[1200px] mx-auto">
-
         {/* Backlog Header */}
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
@@ -991,6 +993,17 @@ const BacklogPage = () => {
                     Start sprint
                   </Button>
                 )}
+                {sprint.status === "COMPLETED" && sprint.completionData && (
+                  <span className={`text-xs px-2 py-1 rounded-full ${
+                    sprint.completionData.metrics.isOverdue
+                      ? 'bg-red-100 text-red-800'
+                      : 'bg-green-100 text-green-800'
+                  }`}>
+                    {sprint.completionData.metrics.isOverdue
+                      ? `Overdue by ${sprint.completionData.metrics.daysOverdue} days`
+                      : 'Completed on time'}
+                  </span>
+                )}
                 <DropdownMenu>
                   <DropdownMenuTrigger
                     asChild
@@ -1005,7 +1018,7 @@ const BacklogPage = () => {
                       onClick={(e) => {
                         e.stopPropagation();
                         setSelectedSprint(sprint);
-                        // We would open an edit sprint modal here
+                        setIsEditSprintModalOpen(true);
                       }}
                     >
                       Edit sprint
@@ -1190,89 +1203,29 @@ const BacklogPage = () => {
         />
 
         {/* Sprint Management Modals */}
-        {isCreateSprintModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md">
-              <h2 className="text-xl font-bold mb-4">Create Sprint</h2>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const formData = new FormData(e.target);
-                  const name = formData.get("name");
-                  const goal = formData.get("goal");
-                  const startDate = formData.get("startDate");
-                  const endDate = formData.get("endDate");
+        <CreateSprintModal
+          isOpen={isCreateSprintModalOpen}
+          onClose={() => setIsCreateSprintModalOpen(false)}
+          onCreateSprint={(newSprint) => {
+            setSprints([...sprints, newSprint]);
+          }}
+        />
 
-                  // Create a new sprint
-                  const newSprint = {
-                    id: `sprint-${Date.now()}`,
-                    name,
-                    goal,
-                    startDate,
-                    endDate,
-                    dateRange: `${new Date(
-                      startDate
-                    ).toLocaleDateString()} - ${new Date(
-                      endDate
-                    ).toLocaleDateString()}`,
-                    status: "PLANNED",
-                    points: { current: 0, total: 0 },
-                    items: [],
-                  };
-
-                  setSprints([...sprints, newSprint]);
-                  setIsCreateSprintModalOpen(false);
-                }}
-              >
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Sprint Name <span className="text-red-500">*</span>
-                    </label>
-                    <Input name="name" required placeholder="e.g., Sprint 3" />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Sprint Goal
-                    </label>
-                    <Input
-                      name="goal"
-                      placeholder="e.g., Complete user authentication"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Start Date <span className="text-red-500">*</span>
-                      </label>
-                      <Input name="startDate" type="date" required />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        End Date <span className="text-red-500">*</span>
-                      </label>
-                      <Input name="endDate" type="date" required />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-6 flex justify-end space-x-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsCreateSprintModalOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="submit">Create</Button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+        <EditSprintModal
+          isOpen={isEditSprintModalOpen}
+          onClose={() => {
+            setIsEditSprintModalOpen(false);
+            setSelectedSprint(null);
+          }}
+          sprint={selectedSprint}
+          onUpdateSprint={(updatedSprint) => {
+            // Update the sprint in the sprints array
+            const updatedSprints = sprints.map(sprint =>
+              sprint.id === updatedSprint.id ? updatedSprint : sprint
+            );
+            setSprints(updatedSprints);
+          }}
+        />
 
         {isStartSprintModalOpen && selectedSprint && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -1334,79 +1287,63 @@ const BacklogPage = () => {
           </div>
         )}
 
-        {isCompleteSprintModalOpen && selectedSprint && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md">
-              <h2 className="text-xl font-bold mb-4">Complete Sprint</h2>
-              <p className="mb-4">
-                You are about to complete sprint{" "}
-                <strong>{selectedSprint.name}</strong>.
-              </p>
+        <CompleteSprintModal
+          isOpen={isCompleteSprintModalOpen}
+          onClose={() => {
+            setIsCompleteSprintModalOpen(false);
+            setSelectedSprint(null);
+          }}
+          sprint={selectedSprint}
+          onCompleteSprint={(sprintId, completionData, incompleteItemsDestination) => {
+            // Handle incomplete items
+            let updatedBacklogItems = [...backlogItems];
+            let nextSprintId = null;
 
-              <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-                <h3 className="font-medium text-yellow-800 mb-2">
-                  Sprint Summary
-                </h3>
-                <div className="flex justify-between text-sm mb-1">
-                  <span>Completed:</span>
-                  <span className="font-medium">
-                    {
-                      selectedSprint.items.filter(
-                        (item) => item.status === "DONE"
-                      ).length
-                    }{" "}
-                    of {selectedSprint.items.length} issues
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span>Story Points:</span>
-                  <span className="font-medium">
-                    {selectedSprint.points.current} of{" "}
-                    {selectedSprint.points.total} points
-                  </span>
-                </div>
-              </div>
+            // Find the next planned sprint if we're moving items to the next sprint
+            if (incompleteItemsDestination === 'next') {
+              const plannedSprints = sprints.filter(s => s.status === 'PLANNED');
+              if (plannedSprints.length > 0) {
+                // Sort by start date to find the earliest planned sprint
+                plannedSprints.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+                nextSprintId = plannedSprints[0].id;
+              }
+            }
 
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  What to do with incomplete issues?
-                </label>
-                <select className="w-full border border-gray-300 rounded-md p-2">
-                  <option value="backlog">Move to Backlog</option>
-                  <option value="next">Move to Next Sprint</option>
-                </select>
-              </div>
+            // Update sprints with completion data and handle incomplete items
+            const updatedSprints = sprints.map(sprint => {
+              if (sprint.id === sprintId) {
+                // Get completed items
+                const completedItems = sprint.items.filter(item => item.status === 'DONE');
 
-              <div className="mt-6 flex justify-end space-x-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setIsCompleteSprintModalOpen(false);
-                    setSelectedSprint(null);
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={() => {
-                    // Update sprint status to COMPLETED
-                    const updatedSprints = sprints.map((sprint) =>
-                      sprint.id === selectedSprint.id
-                        ? { ...sprint, status: "COMPLETED" }
-                        : sprint
-                    );
-                    setSprints(updatedSprints);
-                    setIsCompleteSprintModalOpen(false);
-                    setSelectedSprint(null);
-                  }}
-                >
-                  Complete Sprint
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
+                // Create updated sprint with completion data
+                return {
+                  ...sprint,
+                  status: "COMPLETED",
+                  completionData,
+                  items: completedItems // Keep only completed items in the sprint
+                };
+              } else if (sprint.id === nextSprintId && incompleteItemsDestination === 'next') {
+                // Move incomplete items to the next sprint
+                const incompleteItems = selectedSprint.items.filter(item => item.status !== 'DONE');
+                return {
+                  ...sprint,
+                  items: [...sprint.items, ...incompleteItems]
+                };
+              }
+              return sprint;
+            });
+
+            // If we're moving items to the backlog or there's no next sprint
+            if (incompleteItemsDestination === 'backlog' || (incompleteItemsDestination === 'next' && !nextSprintId)) {
+              const incompleteItems = selectedSprint.items.filter(item => item.status !== 'DONE');
+              updatedBacklogItems = [...updatedBacklogItems, ...incompleteItems];
+            }
+
+            // Update state
+            setSprints(updatedSprints);
+            setBacklogItems(updatedBacklogItems);
+          }}
+        />
 
         {/* Create Epic Modal */}
         {isCreateEpicModalOpen && (

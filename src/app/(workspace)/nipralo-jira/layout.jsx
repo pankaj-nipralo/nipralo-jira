@@ -25,7 +25,9 @@ export default function WorkspaceLayout({ children }) {
     const mainRoutes = [
       "/nipralo-jira/workspace",
       "/nipralo-jira/summary",
+      "/nipralo-jira/all-projects",
       "/nipralo-jira/reports",
+      "/nipralo-jira/time-tracking",
       "/nipralo-jira/client",
     ];
 
