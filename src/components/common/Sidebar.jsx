@@ -8,6 +8,7 @@ import {
   BarChart2,
   Clock,
   User,
+  FolderGit2 
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -18,6 +19,7 @@ import { SITE_URL } from "@/lib/constant";
 const WorkspaceSidebarItems = [
   { label: "Home", icon: Home, href: "workspace" },
   { label: "Summary", icon: FileText, href: "summary" },
+  { label: "Projects", icon: FolderGit2 , href: "all-projects" },
   { label: "Reports", icon: BarChart2, href: "reports" },
   { label: "Time Tracking", icon: Clock, href: "time-tracking" },
   { label: "Client", icon: User, href: "client" },
