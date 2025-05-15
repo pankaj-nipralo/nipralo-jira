@@ -64,7 +64,7 @@ const MemberProfileModal = ({ isOpen, onClose, member, onUpdateMember, onRemoveM
   if (!isOpen || !member) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-[#00000049] bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold">Team Member Profile</h2>

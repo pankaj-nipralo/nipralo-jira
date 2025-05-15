@@ -39,7 +39,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar-react19";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -1314,7 +1314,7 @@ const WorkItemDetails = ({ item, onClose, onUpdate }) => {
                       onChange={handleFileUpload}
                       disabled={isUploading}
                     />
-                    <Button variant="outline" size="sm" 
+                    <Button variant="outline" size="sm"
                     disabled={isUploading}>
                       <ImageIcon className="h-4 w-4 mr-1" /> Add Image
                     </Button>

@@ -64,12 +64,12 @@ const ClientDetailPage = () => {
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="mb-4">
+        {/* <TabsList className="mb-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
           <TabsTrigger value="meetings">Meetings</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
-        </TabsList>
+        </TabsList> */}
 
         <TabsContent value="overview">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -133,7 +133,7 @@ const ClientDetailPage = () => {
             </Card>
           </div>
         </TabsContent>
-
+{/* 
         <TabsContent value="tasks">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -218,7 +218,7 @@ const ClientDetailPage = () => {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+        </TabsContent> */}
       </Tabs>
     </div>
   );
