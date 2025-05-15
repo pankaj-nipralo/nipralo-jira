@@ -12,8 +12,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import clsx from "clsx";
-import { useState } from "react";
+import clsx from "clsx"; 
+import { SITE_URL } from "@/lib/constant";
 
 const sidebarItems = [
   { label: "Profile", icon: Globe, href: "my-account" },
@@ -21,7 +21,7 @@ const sidebarItems = [
   { label: "Logout", icon: Goal, href: "login" },
 ];
 
-const url = "http://localhost:3000";
+const url = `${SITE_URL}`;
 
 // Mock projects
 const projects = [

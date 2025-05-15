@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { useState, useRef, useEffect } from "react";
+import { SITE_URL } from "@/lib/constant";
 
 const WorkspaceSidebarItems = [
   { label: "Home", icon: Home, href: "workspace" },
@@ -13,7 +14,7 @@ const WorkspaceSidebarItems = [
   { label: "Client", icon: User, href: "client" },
 ];
 
-const url = "http://localhost:3000/nipralo-jira";
+const url = `${SITE_URL}/nipralo-jira`;;
 
 // Mock Workspace
 const Workspace = [

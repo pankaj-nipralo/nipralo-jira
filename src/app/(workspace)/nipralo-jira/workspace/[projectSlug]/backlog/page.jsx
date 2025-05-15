@@ -9,7 +9,7 @@ import {
   ChevronRight,
   MoreHorizontal,
   Settings,
-  X
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import BacklogItem from "@/components/backlog/BacklogItem";
 import AddBacklogItemModal from "@/components/backlog/AddBacklogItemModal";
@@ -37,15 +37,16 @@ const BacklogPage = () => {
   const [expandedSprints, setExpandedSprints] = useState({});
 
   // State for search and filters
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [filteredBacklogItems, setFilteredBacklogItems] = useState([]);
   const [filteredSprints, setFilteredSprints] = useState([]);
-  const [epicFilter, setEpicFilter] = useState('all');
+  const [epicFilter, setEpicFilter] = useState("all");
 
   // State for sprint management
   const [isCreateSprintModalOpen, setIsCreateSprintModalOpen] = useState(false);
   const [isStartSprintModalOpen, setIsStartSprintModalOpen] = useState(false);
-  const [isCompleteSprintModalOpen, setIsCompleteSprintModalOpen] = useState(false);
+  const [isCompleteSprintModalOpen, setIsCompleteSprintModalOpen] =
+    useState(false);
   const [selectedSprint, setSelectedSprint] = useState(null);
 
   // State for epic management
@@ -99,149 +100,157 @@ const BacklogPage = () => {
     let activeFilterType = null;
 
     // Apply epic filter first if it's not 'all'
-    if (epicFilter !== 'all') {
-      activeFilterType = 'epic';
+    if (epicFilter !== "all") {
+      activeFilterType = "epic";
 
       // Filter sprints - keep sprint structure but filter items within each sprint
-      tempSprintItems = tempSprintItems.map(sprint => {
-        const filteredItems = sprint.items.filter(item =>
-          item.epic && item.epic.id === epicFilter
+      tempSprintItems = tempSprintItems.map((sprint) => {
+        const filteredItems = sprint.items.filter(
+          (item) => item.epic && item.epic.id === epicFilter
         );
 
         // Mark these items as filtered by epic
-        filteredItems.forEach(item => {
-          filteredItemsMap.set(item.id, 'epic');
+        filteredItems.forEach((item) => {
+          filteredItemsMap.set(item.id, "epic");
         });
 
         return {
           ...sprint,
-          items: filteredItems
+          items: filteredItems,
         };
       });
 
       // Filter backlog items
-      tempBacklogItems = tempBacklogItems.filter(item =>
-        item.epic && item.epic.id === epicFilter
+      tempBacklogItems = tempBacklogItems.filter(
+        (item) => item.epic && item.epic.id === epicFilter
       );
 
       // Mark these items as filtered by epic
-      tempBacklogItems.forEach(item => {
-        filteredItemsMap.set(item.id, 'epic');
+      tempBacklogItems.forEach((item) => {
+        filteredItemsMap.set(item.id, "epic");
       });
     }
 
     // Apply user filter if any users are selected
     if (selectedUsers.length > 0) {
-      activeFilterType = activeFilterType || 'user';
+      activeFilterType = activeFilterType || "user";
 
       // Check if "unassigned" is in the selected users
-      const includeUnassigned = selectedUsers.includes('unassigned');
+      const includeUnassigned = selectedUsers.includes("unassigned");
 
       // Filter sprints - keep sprint structure but filter items within each sprint
-      tempSprintItems = tempSprintItems.map(sprint => {
-        const filteredItems = sprint.items.filter(item => {
+      tempSprintItems = tempSprintItems.map((sprint) => {
+        const filteredItems = sprint.items.filter((item) => {
           // Include unassigned items if unassigned filter is selected
           if (includeUnassigned && (!item.assignee || !item.assignee.id)) {
-            filteredItemsMap.set(item.id, 'unassigned');
+            filteredItemsMap.set(item.id, "unassigned");
             return true;
           }
 
           // Include items assigned to any of the selected users
-          const isAssignedToSelectedUser = item.assignee && selectedUsers.includes(item.assignee.id);
+          const isAssignedToSelectedUser =
+            item.assignee && selectedUsers.includes(item.assignee.id);
           if (isAssignedToSelectedUser) {
-            filteredItemsMap.set(item.id, 'user');
+            filteredItemsMap.set(item.id, "user");
           }
           return isAssignedToSelectedUser;
         });
 
         return {
           ...sprint,
-          items: filteredItems
+          items: filteredItems,
         };
       });
 
       // Filter backlog items
-      tempBacklogItems = tempBacklogItems.filter(item => {
+      tempBacklogItems = tempBacklogItems.filter((item) => {
         // Include unassigned items if unassigned filter is selected
         if (includeUnassigned && (!item.assignee || !item.assignee.id)) {
-          filteredItemsMap.set(item.id, 'unassigned');
+          filteredItemsMap.set(item.id, "unassigned");
           return true;
         }
 
         // Include items assigned to any of the selected users
-        const isAssignedToSelectedUser = item.assignee && selectedUsers.includes(item.assignee.id);
+        const isAssignedToSelectedUser =
+          item.assignee && selectedUsers.includes(item.assignee.id);
         if (isAssignedToSelectedUser) {
-          filteredItemsMap.set(item.id, 'user');
+          filteredItemsMap.set(item.id, "user");
         }
         return isAssignedToSelectedUser;
       });
     }
 
     // Then apply search filter if there's a search query
-    if (searchQuery.trim() !== '') {
-      activeFilterType = activeFilterType || 'search';
+    if (searchQuery.trim() !== "") {
+      activeFilterType = activeFilterType || "search";
       const query = searchQuery.toLowerCase();
 
       // Filter sprints - keep sprint structure but filter items within each sprint
-      tempSprintItems = tempSprintItems.map(sprint => {
-        const filteredItems = sprint.items.filter(item =>
-          item.key.toLowerCase().includes(query) ||
-          item.title.toLowerCase().includes(query) ||
-          (item.labels && item.labels.some(label => label.toLowerCase().includes(query))) ||
-          (item.epic && item.epic.name.toLowerCase().includes(query))
+      tempSprintItems = tempSprintItems.map((sprint) => {
+        const filteredItems = sprint.items.filter(
+          (item) =>
+            item.key.toLowerCase().includes(query) ||
+            item.title.toLowerCase().includes(query) ||
+            (item.labels &&
+              item.labels.some((label) =>
+                label.toLowerCase().includes(query)
+              )) ||
+            (item.epic && item.epic.name.toLowerCase().includes(query))
         );
 
         // Mark these items as filtered by search if not already filtered
-        filteredItems.forEach(item => {
+        filteredItems.forEach((item) => {
           if (!filteredItemsMap.has(item.id)) {
-            filteredItemsMap.set(item.id, 'search');
+            filteredItemsMap.set(item.id, "search");
           }
         });
 
         return {
           ...sprint,
-          items: filteredItems
+          items: filteredItems,
         };
       });
 
       // Filter backlog items
-      tempBacklogItems = tempBacklogItems.filter(item =>
-        item.key.toLowerCase().includes(query) ||
-        item.title.toLowerCase().includes(query) ||
-        (item.labels && item.labels.some(label => label.toLowerCase().includes(query))) ||
-        (item.epic && item.epic.name.toLowerCase().includes(query))
+      tempBacklogItems = tempBacklogItems.filter(
+        (item) =>
+          item.key.toLowerCase().includes(query) ||
+          item.title.toLowerCase().includes(query) ||
+          (item.labels &&
+            item.labels.some((label) => label.toLowerCase().includes(query))) ||
+          (item.epic && item.epic.name.toLowerCase().includes(query))
       );
 
       // Mark these items as filtered by search if not already filtered
-      tempBacklogItems.forEach(item => {
+      tempBacklogItems.forEach((item) => {
         if (!filteredItemsMap.has(item.id)) {
-          filteredItemsMap.set(item.id, 'search');
+          filteredItemsMap.set(item.id, "search");
         }
       });
     }
 
     // Add filter information to each item
-    tempSprintItems = tempSprintItems.map(sprint => {
-      const itemsWithFilterInfo = sprint.items.map(item => ({
+    tempSprintItems = tempSprintItems.map((sprint) => {
+      const itemsWithFilterInfo = sprint.items.map((item) => ({
         ...item,
         _filterInfo: {
           isFiltered: filteredItemsMap.has(item.id),
-          filterType: filteredItemsMap.get(item.id)
-        }
+          filterType: filteredItemsMap.get(item.id),
+        },
       }));
 
       return {
         ...sprint,
-        items: itemsWithFilterInfo
+        items: itemsWithFilterInfo,
       };
     });
 
-    tempBacklogItems = tempBacklogItems.map(item => ({
+    tempBacklogItems = tempBacklogItems.map((item) => ({
       ...item,
       _filterInfo: {
         isFiltered: filteredItemsMap.has(item.id),
-        filterType: filteredItemsMap.get(item.id)
-      }
+        filterType: filteredItemsMap.get(item.id),
+      },
     }));
 
     setFilteredSprints(tempSprintItems);
@@ -263,10 +272,10 @@ const BacklogPage = () => {
       setIsChangeEpicModalOpen(true);
     };
 
-    window.addEventListener('change-epic', handleChangeEpic);
+    window.addEventListener("change-epic", handleChangeEpic);
 
     return () => {
-      window.removeEventListener('change-epic', handleChangeEpic);
+      window.removeEventListener("change-epic", handleChangeEpic);
     };
   }, []);
 
@@ -276,10 +285,10 @@ const BacklogPage = () => {
     const allKeys = [];
 
     // Get keys from sprint items
-    sprints.forEach(sprint => {
-      sprint.items.forEach(item => {
-        if (item.key && item.key.startsWith('CRM-')) {
-          const keyNumber = parseInt(item.key.replace('CRM-', ''), 10);
+    sprints.forEach((sprint) => {
+      sprint.items.forEach((item) => {
+        if (item.key && item.key.startsWith("CRM-")) {
+          const keyNumber = parseInt(item.key.replace("CRM-", ""), 10);
           if (!isNaN(keyNumber)) {
             allKeys.push(keyNumber);
           }
@@ -288,9 +297,9 @@ const BacklogPage = () => {
     });
 
     // Get keys from backlog items
-    backlogItems.forEach(item => {
-      if (item.key && item.key.startsWith('CRM-')) {
-        const keyNumber = parseInt(item.key.replace('CRM-', ''), 10);
+    backlogItems.forEach((item) => {
+      if (item.key && item.key.startsWith("CRM-")) {
+        const keyNumber = parseInt(item.key.replace("CRM-", ""), 10);
         if (!isNaN(keyNumber)) {
           allKeys.push(keyNumber);
         }
@@ -311,7 +320,7 @@ const BacklogPage = () => {
     const itemWithKey = {
       ...newItem,
       id: Date.now(),
-      key: `CRM-${nextKeyNumber}`
+      key: `CRM-${nextKeyNumber}`,
     };
 
     if (targetSprint) {
@@ -496,29 +505,29 @@ const BacklogPage = () => {
         key: "EPIC-1",
         name: "User Authentication",
         summary: "Implement user authentication and authorization",
-        color: "#0052CC" // Blue
+        color: "#0052CC", // Blue
       },
       {
         id: "epic-2",
         key: "EPIC-2",
         name: "Customer Management",
         summary: "Customer data management and interaction tracking",
-        color: "#FF5630" // Red
+        color: "#FF5630", // Red
       },
       {
         id: "epic-3",
         key: "EPIC-3",
         name: "Reporting",
         summary: "Reporting and analytics features",
-        color: "#00875A" // Green
+        color: "#00875A", // Green
       },
       {
         id: "epic-4",
         key: "EPIC-4",
         name: "UI Implementation",
         summary: "User interface implementation and design",
-        color: "#6554C0" // Purple
-      }
+        color: "#6554C0", // Purple
+      },
     ];
 
     return {
@@ -542,7 +551,7 @@ const BacklogPage = () => {
               estimate: "0m",
               type: "task",
               priority: "High",
-              epic: epicsList[1] // Customer Management
+              epic: epicsList[1], // Customer Management
             },
             {
               id: "crm-4",
@@ -554,7 +563,7 @@ const BacklogPage = () => {
               labels: ["SAMPLE", "CUSTOMER LOG"],
               type: "task",
               priority: "Medium",
-              epic: epicsList[1] // Customer Management
+              epic: epicsList[1], // Customer Management
             },
             {
               id: "crm-5",
@@ -566,9 +575,9 @@ const BacklogPage = () => {
               labels: ["SAMPLE", "CUSTOMER LOG"],
               type: "story",
               priority: "Low",
-              epic: epicsList[2] // Reporting
-            }
-          ]
+              epic: epicsList[2], // Reporting
+            },
+          ],
         },
         {
           id: "sprint-2",
@@ -589,7 +598,7 @@ const BacklogPage = () => {
               estimate: "8h",
               type: "task",
               priority: "High",
-              epic: epicsList[0] // User Authentication
+              epic: epicsList[0], // User Authentication
             },
             {
               id: "crm-16",
@@ -601,10 +610,10 @@ const BacklogPage = () => {
               labels: ["SECURITY", "USER MANAGEMENT"],
               type: "task",
               priority: "High",
-              epic: epicsList[0] // User Authentication
-            }
-          ]
-        }
+              epic: epicsList[0], // User Authentication
+            },
+          ],
+        },
       ],
       backlogItems: [
         {
@@ -616,7 +625,7 @@ const BacklogPage = () => {
           estimate: "0m",
           type: "task",
           priority: "Medium",
-          epic: epicsList[3] // UI Implementation
+          epic: epicsList[3], // UI Implementation
         },
         {
           id: "crm-6",
@@ -628,7 +637,7 @@ const BacklogPage = () => {
           labels: ["SAMPLE", "USER MANAGEMENT"],
           type: "task",
           priority: "Medium",
-          epic: epicsList[0] // User Authentication
+          epic: epicsList[0], // User Authentication
         },
         {
           id: "crm-7",
@@ -639,7 +648,7 @@ const BacklogPage = () => {
           estimate: "1h 30m",
           type: "bug",
           priority: "High",
-          epic: epicsList[0] // User Authentication
+          epic: epicsList[0], // User Authentication
         },
         {
           id: "crm-9",
@@ -650,7 +659,7 @@ const BacklogPage = () => {
           estimate: "0m",
           type: "task",
           priority: "Low",
-          epic: epicsList[3] // UI Implementation
+          epic: epicsList[3], // UI Implementation
         },
         {
           id: "crm-10",
@@ -661,7 +670,7 @@ const BacklogPage = () => {
           estimate: "0m",
           type: "task",
           priority: "Low",
-          epic: epicsList[3] // UI Implementation
+          epic: epicsList[3], // UI Implementation
         },
         {
           id: "crm-11",
@@ -672,17 +681,47 @@ const BacklogPage = () => {
           estimate: "5h",
           type: "bug",
           priority: "Medium",
-          epic: epicsList[3] // UI Implementation
-        }
+          epic: epicsList[3], // UI Implementation
+        },
       ],
       users: [
-        { id: "user-1", name: "John Doe", avatar: "JD", email: "john.doe@example.com", role: "Developer" },
-        { id: "user-2", name: "Jane Smith", avatar: "JS", email: "jane.smith@example.com", role: "Designer" },
-        { id: "user-3", name: "Robert Brown", avatar: "RB", email: "robert.brown@example.com", role: "Product Manager" },
-        { id: "user-4", name: "Emily Johnson", avatar: "EJ", email: "emily.johnson@example.com", role: "QA Engineer" },
-        { id: "user-5", name: "Michael Wilson", avatar: "MW", email: "michael.wilson@example.com", role: "DevOps Engineer" }
+        {
+          id: "user-1",
+          name: "John Doe",
+          avatar: "JD",
+          email: "john.doe@example.com",
+          role: "Developer",
+        },
+        {
+          id: "user-2",
+          name: "Jane Smith",
+          avatar: "JS",
+          email: "jane.smith@example.com",
+          role: "Designer",
+        },
+        {
+          id: "user-3",
+          name: "Robert Brown",
+          avatar: "RB",
+          email: "robert.brown@example.com",
+          role: "Product Manager",
+        },
+        {
+          id: "user-4",
+          name: "Emily Johnson",
+          avatar: "EJ",
+          email: "emily.johnson@example.com",
+          role: "QA Engineer",
+        },
+        {
+          id: "user-5",
+          name: "Michael Wilson",
+          avatar: "MW",
+          email: "michael.wilson@example.com",
+          role: "DevOps Engineer",
+        },
       ],
-      epics: epicsList
+      epics: epicsList,
     };
   };
 
@@ -695,6 +734,8 @@ const BacklogPage = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="p-4 max-w-[1200px] mx-auto">
+
+        {/* Backlog Header */}
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-semibold">Backlog</h1>
@@ -718,32 +759,31 @@ const BacklogPage = () => {
             <div className="flex items-center gap-1">
               {/* User Filter Label */}
               {selectedUsers.length > 0 && (
-                <div className="text-xs text-gray-500 mr-1">
-                  Filtering by:
-                </div>
+                <div className="text-xs text-gray-500 mr-1">Filtering by:</div>
               )}
 
               {/* User Avatars */}
-              {users.slice(0, 3).map(user => (
+              {users.slice(0, 3).map((user) => (
                 <div
                   key={user.id}
                   className={`w-8 h-8 rounded-full text-white flex items-center justify-center text-sm font-medium cursor-pointer transition-all ${
                     selectedUsers.includes(user.id)
-                      ? 'ring-2 ring-blue-500 ring-offset-2 scale-110'
-                      : 'hover:opacity-80'
+                      ? "ring-2 ring-blue-500 ring-offset-2 scale-110"
+                      : "hover:opacity-80"
                   }`}
                   style={{
-                    backgroundColor: user.id === 'user-1'
-                      ? '#3b82f6'
-                      : user.id === 'user-2'
-                        ? '#f97316'
-                        : '#10b981'
+                    backgroundColor:
+                      user.id === "user-1"
+                        ? "#3b82f6"
+                        : user.id === "user-2"
+                        ? "#f97316"
+                        : "#10b981",
                   }}
                   title={`${user.name} (${user.role})`}
                   onClick={() => {
-                    setSelectedUsers(prev =>
+                    setSelectedUsers((prev) =>
                       prev.includes(user.id)
-                        ? prev.filter(id => id !== user.id)
+                        ? prev.filter((id) => id !== user.id)
                         : [...prev, user.id]
                     );
                   }}
@@ -755,16 +795,16 @@ const BacklogPage = () => {
               {/* Unassigned filter option */}
               <div
                 className={`w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium cursor-pointer transition-all ${
-                  selectedUsers.includes('unassigned')
-                    ? 'ring-2 ring-blue-500 ring-offset-2 scale-110'
-                    : 'hover:opacity-80'
+                  selectedUsers.includes("unassigned")
+                    ? "ring-2 ring-blue-500 ring-offset-2 scale-110"
+                    : "hover:opacity-80"
                 }`}
                 title="Unassigned Tasks"
                 onClick={() => {
-                  setSelectedUsers(prev =>
-                    prev.includes('unassigned')
-                      ? prev.filter(id => id !== 'unassigned')
-                      : [...prev, 'unassigned']
+                  setSelectedUsers((prev) =>
+                    prev.includes("unassigned")
+                      ? prev.filter((id) => id !== "unassigned")
+                      : [...prev, "unassigned"]
                   );
                 }}
               >
@@ -780,18 +820,25 @@ const BacklogPage = () => {
                     </div>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    {users.slice(3).map(user => (
-                      <DropdownMenuItem key={user.id} onClick={() => {
-                        setSelectedUsers(prev =>
-                          prev.includes(user.id)
-                            ? prev.filter(id => id !== user.id)
-                            : [...prev, user.id]
-                        );
-                      }}>
+                    {users.slice(3).map((user) => (
+                      <DropdownMenuItem
+                        key={user.id}
+                        onClick={() => {
+                          setSelectedUsers((prev) =>
+                            prev.includes(user.id)
+                              ? prev.filter((id) => id !== user.id)
+                              : [...prev, user.id]
+                          );
+                        }}
+                      >
                         <div className="flex items-center gap-2">
-                          <div className={`w-6 h-6 rounded-full bg-purple-500 text-white flex items-center justify-center text-xs font-medium ${
-                            selectedUsers.includes(user.id) ? 'ring-1 ring-blue-500' : ''
-                          }`}>
+                          <div
+                            className={`w-6 h-6 rounded-full bg-purple-500 text-white flex items-center justify-center text-xs font-medium ${
+                              selectedUsers.includes(user.id)
+                                ? "ring-1 ring-blue-500"
+                                : ""
+                            }`}
+                          >
                             {user.avatar}
                           </div>
                           <span>{user.name}</span>
@@ -826,24 +873,24 @@ const BacklogPage = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm" className="h-8">
-                    Epic {epicFilter !== 'all' && '✓'}
+                    Epic {epicFilter !== "all" && "✓"}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuItem
-                    onClick={() => setEpicFilter('all')}
-                    className={epicFilter === 'all' ? 'bg-gray-100' : ''}
+                    onClick={() => setEpicFilter("all")}
+                    className={epicFilter === "all" ? "bg-gray-100" : ""}
                   >
                     All Epics
                   </DropdownMenuItem>
 
                   <DropdownMenuSeparator />
 
-                  {epics.map(epic => (
+                  {epics.map((epic) => (
                     <DropdownMenuItem
                       key={epic.id}
                       onClick={() => setEpicFilter(epic.id)}
-                      className={epicFilter === epic.id ? 'bg-gray-100' : ''}
+                      className={epicFilter === epic.id ? "bg-gray-100" : ""}
                     >
                       <div className="flex items-center gap-2">
                         <div
@@ -857,7 +904,9 @@ const BacklogPage = () => {
 
                   <DropdownMenuSeparator />
 
-                  <DropdownMenuItem onClick={() => setIsCreateEpicModalOpen(true)}>
+                  <DropdownMenuItem
+                    onClick={() => setIsCreateEpicModalOpen(true)}
+                  >
                     <Plus className="h-4 w-4 mr-2" /> Create Epic
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -915,7 +964,7 @@ const BacklogPage = () => {
                 <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">
                   {sprint.status}
                 </span>
-                {sprint.status === 'ACTIVE' && (
+                {sprint.status === "ACTIVE" && (
                   <Button
                     variant="ghost"
                     size="sm"
@@ -928,7 +977,7 @@ const BacklogPage = () => {
                     Complete sprint
                   </Button>
                 )}
-                {sprint.status === 'PLANNED' && (
+                {sprint.status === "PLANNED" && (
                   <Button
                     variant="ghost"
                     size="sm"
@@ -951,21 +1000,35 @@ const BacklogPage = () => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedSprint(sprint);
-                      // We would open an edit sprint modal here
-                    }}>Edit sprint</DropdownMenuItem>
-                    <DropdownMenuItem onClick={(e) => {
-                      e.stopPropagation();
-                      if (window.confirm(`Are you sure you want to delete sprint "${sprint.name}"?`)) {
-                        // Remove the sprint but keep its items in the backlog
-                        const updatedSprints = sprints.filter(s => s.id !== sprint.id);
-                        const sprintItems = sprint.items || [];
-                        setSprints(updatedSprints);
-                        setBacklogItems([...backlogItems, ...sprintItems]);
-                      }
-                    }}>Delete sprint</DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedSprint(sprint);
+                        // We would open an edit sprint modal here
+                      }}
+                    >
+                      Edit sprint
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (
+                          window.confirm(
+                            `Are you sure you want to delete sprint "${sprint.name}"?`
+                          )
+                        ) {
+                          // Remove the sprint but keep its items in the backlog
+                          const updatedSprints = sprints.filter(
+                            (s) => s.id !== sprint.id
+                          );
+                          const sprintItems = sprint.items || [];
+                          setSprints(updatedSprints);
+                          setBacklogItems([...backlogItems, ...sprintItems]);
+                        }
+                      }}
+                    >
+                      Delete sprint
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -1121,40 +1184,42 @@ const BacklogPage = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg p-6 w-full max-w-md">
               <h2 className="text-xl font-bold mb-4">Create Sprint</h2>
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const name = formData.get('name');
-                const goal = formData.get('goal');
-                const startDate = formData.get('startDate');
-                const endDate = formData.get('endDate');
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.target);
+                  const name = formData.get("name");
+                  const goal = formData.get("goal");
+                  const startDate = formData.get("startDate");
+                  const endDate = formData.get("endDate");
 
-                // Create a new sprint
-                const newSprint = {
-                  id: `sprint-${Date.now()}`,
-                  name,
-                  goal,
-                  startDate,
-                  endDate,
-                  dateRange: `${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}`,
-                  status: 'PLANNED',
-                  points: { current: 0, total: 0 },
-                  items: []
-                };
+                  // Create a new sprint
+                  const newSprint = {
+                    id: `sprint-${Date.now()}`,
+                    name,
+                    goal,
+                    startDate,
+                    endDate,
+                    dateRange: `${new Date(
+                      startDate
+                    ).toLocaleDateString()} - ${new Date(
+                      endDate
+                    ).toLocaleDateString()}`,
+                    status: "PLANNED",
+                    points: { current: 0, total: 0 },
+                    items: [],
+                  };
 
-                setSprints([...sprints, newSprint]);
-                setIsCreateSprintModalOpen(false);
-              }}>
+                  setSprints([...sprints, newSprint]);
+                  setIsCreateSprintModalOpen(false);
+                }}
+              >
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Sprint Name <span className="text-red-500">*</span>
                     </label>
-                    <Input
-                      name="name"
-                      required
-                      placeholder="e.g., Sprint 3"
-                    />
+                    <Input name="name" required placeholder="e.g., Sprint 3" />
                   </div>
 
                   <div>
@@ -1172,22 +1237,14 @@ const BacklogPage = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Start Date <span className="text-red-500">*</span>
                       </label>
-                      <Input
-                        name="startDate"
-                        type="date"
-                        required
-                      />
+                      <Input name="startDate" type="date" required />
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         End Date <span className="text-red-500">*</span>
                       </label>
-                      <Input
-                        name="endDate"
-                        type="date"
-                        required
-                      />
+                      <Input name="endDate" type="date" required />
                     </div>
                   </div>
                 </div>
@@ -1200,9 +1257,7 @@ const BacklogPage = () => {
                   >
                     Cancel
                   </Button>
-                  <Button type="submit">
-                    Create
-                  </Button>
+                  <Button type="submit">Create</Button>
                 </div>
               </form>
             </div>
@@ -1214,20 +1269,27 @@ const BacklogPage = () => {
             <div className="bg-white rounded-lg p-6 w-full max-w-md">
               <h2 className="text-xl font-bold mb-4">Start Sprint</h2>
               <p className="mb-4">
-                You are about to start sprint <strong>{selectedSprint.name}</strong>.
+                You are about to start sprint{" "}
+                <strong>{selectedSprint.name}</strong>.
               </p>
               <div className="mb-4">
                 <div className="flex justify-between text-sm mb-1">
                   <span>Sprint Goal:</span>
-                  <span className="font-medium">{selectedSprint.goal || 'No goal set'}</span>
+                  <span className="font-medium">
+                    {selectedSprint.goal || "No goal set"}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm mb-1">
                   <span>Duration:</span>
-                  <span className="font-medium">{selectedSprint.dateRange}</span>
+                  <span className="font-medium">
+                    {selectedSprint.dateRange}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Items:</span>
-                  <span className="font-medium">{selectedSprint.items.length} issues</span>
+                  <span className="font-medium">
+                    {selectedSprint.items.length} issues
+                  </span>
                 </div>
               </div>
 
@@ -1245,9 +1307,9 @@ const BacklogPage = () => {
                 <Button
                   onClick={() => {
                     // Update sprint status to ACTIVE
-                    const updatedSprints = sprints.map(sprint =>
+                    const updatedSprints = sprints.map((sprint) =>
                       sprint.id === selectedSprint.id
-                        ? { ...sprint, status: 'ACTIVE' }
+                        ? { ...sprint, status: "ACTIVE" }
                         : sprint
                     );
                     setSprints(updatedSprints);
@@ -1267,20 +1329,31 @@ const BacklogPage = () => {
             <div className="bg-white rounded-lg p-6 w-full max-w-md">
               <h2 className="text-xl font-bold mb-4">Complete Sprint</h2>
               <p className="mb-4">
-                You are about to complete sprint <strong>{selectedSprint.name}</strong>.
+                You are about to complete sprint{" "}
+                <strong>{selectedSprint.name}</strong>.
               </p>
 
               <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-                <h3 className="font-medium text-yellow-800 mb-2">Sprint Summary</h3>
+                <h3 className="font-medium text-yellow-800 mb-2">
+                  Sprint Summary
+                </h3>
                 <div className="flex justify-between text-sm mb-1">
                   <span>Completed:</span>
                   <span className="font-medium">
-                    {selectedSprint.items.filter(item => item.status === 'DONE').length} of {selectedSprint.items.length} issues
+                    {
+                      selectedSprint.items.filter(
+                        (item) => item.status === "DONE"
+                      ).length
+                    }{" "}
+                    of {selectedSprint.items.length} issues
                   </span>
                 </div>
                 <div className="flex justify-between text-sm mb-1">
                   <span>Story Points:</span>
-                  <span className="font-medium">{selectedSprint.points.current} of {selectedSprint.points.total} points</span>
+                  <span className="font-medium">
+                    {selectedSprint.points.current} of{" "}
+                    {selectedSprint.points.total} points
+                  </span>
                 </div>
               </div>
 
@@ -1308,9 +1381,9 @@ const BacklogPage = () => {
                 <Button
                   onClick={() => {
                     // Update sprint status to COMPLETED
-                    const updatedSprints = sprints.map(sprint =>
+                    const updatedSprints = sprints.map((sprint) =>
                       sprint.id === selectedSprint.id
-                        ? { ...sprint, status: 'COMPLETED' }
+                        ? { ...sprint, status: "COMPLETED" }
                         : sprint
                     );
                     setSprints(updatedSprints);
@@ -1339,25 +1412,27 @@ const BacklogPage = () => {
                 </button>
               </div>
 
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const name = formData.get('name');
-                const summary = formData.get('summary');
-                const color = formData.get('color');
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.target);
+                  const name = formData.get("name");
+                  const summary = formData.get("summary");
+                  const color = formData.get("color");
 
-                // Create a new epic
-                const newEpic = {
-                  id: `epic-${Date.now()}`,
-                  key: `EPIC-${epics.length + 1}`,
-                  name,
-                  summary,
-                  color
-                };
+                  // Create a new epic
+                  const newEpic = {
+                    id: `epic-${Date.now()}`,
+                    key: `EPIC-${epics.length + 1}`,
+                    name,
+                    summary,
+                    color,
+                  };
 
-                setEpics([...epics, newEpic]);
-                setIsCreateEpicModalOpen(false);
-              }}>
+                  setEpics([...epics, newEpic]);
+                  setIsCreateEpicModalOpen(false);
+                }}
+              >
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1412,9 +1487,7 @@ const BacklogPage = () => {
                   >
                     Cancel
                   </Button>
-                  <Button type="submit">
-                    Create
-                  </Button>
+                  <Button type="submit">Create</Button>
                 </div>
               </form>
             </div>
@@ -1440,7 +1513,10 @@ const BacklogPage = () => {
 
               <div className="mb-4">
                 <p className="text-sm text-gray-600">
-                  Select an epic for <strong>{selectedItem.key}: {selectedItem.title}</strong>
+                  Select an epic for{" "}
+                  <strong>
+                    {selectedItem.key}: {selectedItem.title}
+                  </strong>
                 </p>
               </div>
 
@@ -1451,7 +1527,7 @@ const BacklogPage = () => {
                     // Update the item to remove epic
                     handleUpdateItem({
                       ...selectedItem,
-                      epic: null
+                      epic: null,
                     });
                     setIsChangeEpicModalOpen(false);
                     setSelectedItem(null);
@@ -1461,15 +1537,19 @@ const BacklogPage = () => {
                   <span>None</span>
                 </div>
 
-                {epics.map(epic => (
+                {epics.map((epic) => (
                   <div
                     key={epic.id}
-                    className={`p-2 rounded hover:bg-gray-100 cursor-pointer flex items-center ${selectedItem.epic && selectedItem.epic.id === epic.id ? 'bg-gray-100' : ''}`}
+                    className={`p-2 rounded hover:bg-gray-100 cursor-pointer flex items-center ${
+                      selectedItem.epic && selectedItem.epic.id === epic.id
+                        ? "bg-gray-100"
+                        : ""
+                    }`}
                     onClick={() => {
                       // Update the item with the new epic
                       handleUpdateItem({
                         ...selectedItem,
-                        epic: epic
+                        epic: epic,
                       });
                       setIsChangeEpicModalOpen(false);
                       setSelectedItem(null);

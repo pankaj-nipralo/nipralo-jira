@@ -14,6 +14,7 @@ import Link from "next/link";
 import { usePathname, useParams } from "next/navigation";
 import clsx from "clsx";
 import { useState } from "react";
+import { SITE_URL } from "@/lib/constant";
 
 const ClientSidebarItems = [
   { label: "Overview", icon: Home, href: "" },
@@ -27,8 +28,8 @@ const ClientSidebarItems = [
 const ClientSidebar = () => {
   const pathname = usePathname();
   const params = useParams();
-  const { slug } = params;
-  const baseUrl = "http://localhost:3000/nipralo-jira/client";
+  const { slug } = params; 
+  const baseUrl = `${SITE_URL}nipralo-jira/client`;
 
   return (
     <aside className="w-16 md:w-64 border-r bg-white h-full p-3 flex flex-col relative transition-all duration-300">

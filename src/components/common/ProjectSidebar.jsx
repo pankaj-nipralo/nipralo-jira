@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import { usePathname, useParams } from "next/navigation";
 import clsx from "clsx";
+import { SITE_URL } from "@/lib/constant";
 
 const ProjectSidebarItems = [
   { label: "Dashboard", icon: LayoutDashboard, href: "" },
@@ -34,6 +35,7 @@ const ProjectSidebarItems = [
 const ProjectSidebar = () => {
   const pathname = usePathname();
   const params = useParams();
+  
   // Extract projectSlug from params or from the URL if not available in params
   let { projectSlug } = params;
 
@@ -44,7 +46,7 @@ const ProjectSidebar = () => {
       projectSlug = match[1];
     }
   }
-  const baseUrl = "/nipralo-jira/workspace";
+  const baseUrl = `/nipralo-jira/workspace`;
 
   return (
     <aside className="w-16 md:w-64 border-r bg-white h-full p-3 flex flex-col relative transition-all duration-300">

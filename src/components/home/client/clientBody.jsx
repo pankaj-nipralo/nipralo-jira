@@ -443,7 +443,7 @@ const ClientTable = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex justify-center items-center">
                     <div className="flex space-x-2">
-                      <button className="text-gray-900 hover:text-gray-600 cursor-pointer justify-self-center">
+                      <div className="text-gray-900 hover:text-gray-600 cursor-pointer justify-self-center">
                         {client.editing ? (
                           <>
                             <Button className="cursor-pointer"  onClick={() => toggleEdit(client.id)}>Save</Button>
@@ -466,7 +466,7 @@ const ClientTable = () => {
                             </Button>
                           </div>
                         )}
-                      </button>
+                      </div>
                       {isSuperAdmin && (
                         <button
                           onClick={() => handleDelete(client.id)}

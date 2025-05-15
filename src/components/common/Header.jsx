@@ -7,13 +7,14 @@ import UserProfileMenu from "./ProfileMenu";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
+import { SITE_URL } from "@/lib/constant";
 
 const Header = () => {
   const pathname = usePathname();
   const [isAuthPage, setIsAuthPage] = useState(false);
   const [isInProject, setIsInProject] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const url = "http://localhost:3000/nipralo-jira/";
+  const url = `${SITE_URL}nipralo-jira/`;
 
   useEffect(() => {
     const hideOnRoutes = [
