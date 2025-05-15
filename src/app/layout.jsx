@@ -1,6 +1,11 @@
 // import Footer from "@/components/common/Footer";
 import Header from "@/components/common/Header";
 import "./globals.css";
+import { Geist } from 'next/font/google'
+
+const geist = Geist({
+  subsets: ['latin'],
+})
 
 export const metadata = {
   title: "Nipralo Jira",
@@ -9,7 +14,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className={geist.className}>
       <body>
         <Header />
         {children}

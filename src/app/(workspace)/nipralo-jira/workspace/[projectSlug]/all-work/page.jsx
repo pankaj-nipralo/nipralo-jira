@@ -37,6 +37,8 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import WorkItemDetails from "@/components/work/WorkItemDetails";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const AllWorkPage = () => {
   const params = useParams();
@@ -79,30 +81,31 @@ const AllWorkPage = () => {
     // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(item =>
-        item.key.toLowerCase().includes(query) ||
-        item.summary.toLowerCase().includes(query)
+      filtered = filtered.filter(
+        (item) =>
+          item.key.toLowerCase().includes(query) ||
+          item.summary.toLowerCase().includes(query)
       );
     }
 
     // Apply project filter
     if (projectFilter !== "all") {
-      filtered = filtered.filter(item => item.project === projectFilter);
+      filtered = filtered.filter((item) => item.project === projectFilter);
     }
 
     // Apply type filter
     if (typeFilter !== "all") {
-      filtered = filtered.filter(item => item.type === typeFilter);
+      filtered = filtered.filter((item) => item.type === typeFilter);
     }
 
     // Apply status filter
     if (statusFilter !== "all") {
-      filtered = filtered.filter(item => item.status === statusFilter);
+      filtered = filtered.filter((item) => item.status === statusFilter);
     }
 
     // Apply assignee filter
     if (assigneeFilter !== "all") {
-      filtered = filtered.filter(item =>
+      filtered = filtered.filter((item) =>
         assigneeFilter === "unassigned"
           ? !item.assignee
           : item.assignee?.id === assigneeFilter
@@ -118,7 +121,7 @@ const AllWorkPage = () => {
       const twoWeeks = new Date(today);
       twoWeeks.setDate(today.getDate() + 14);
 
-      filtered = filtered.filter(item => {
+      filtered = filtered.filter((item) => {
         if (!item.dueDate) return false;
 
         const dueDate = new Date(item.dueDate);
@@ -127,9 +130,11 @@ const AllWorkPage = () => {
           case "overdue":
             return dueDate < today;
           case "today":
-            return dueDate.getDate() === today.getDate() &&
-                   dueDate.getMonth() === today.getMonth() &&
-                   dueDate.getFullYear() === today.getFullYear();
+            return (
+              dueDate.getDate() === today.getDate() &&
+              dueDate.getMonth() === today.getMonth() &&
+              dueDate.getFullYear() === today.getFullYear()
+            );
           case "thisWeek":
             return dueDate >= today && dueDate < nextWeek;
           case "nextWeek":
@@ -147,17 +152,21 @@ const AllWorkPage = () => {
       switch (sortField) {
         case "key":
           // Extract numeric part for proper sorting
-          valueA = parseInt(a.key.replace(/\D/g, ''));
-          valueB = parseInt(b.key.replace(/\D/g, ''));
+          valueA = parseInt(a.key.replace(/\D/g, ""));
+          valueB = parseInt(b.key.replace(/\D/g, ""));
           break;
         case "priority":
-          const priorityOrder = { "High": 1, "Medium": 2, "Low": 3 };
+          const priorityOrder = { High: 1, Medium: 2, Low: 3 };
           valueA = priorityOrder[a.priority] || 999;
           valueB = priorityOrder[b.priority] || 999;
           break;
         case "dueDate":
-          valueA = a.dueDate ? new Date(a.dueDate).getTime() : Number.MAX_SAFE_INTEGER;
-          valueB = b.dueDate ? new Date(b.dueDate).getTime() : Number.MAX_SAFE_INTEGER;
+          valueA = a.dueDate
+            ? new Date(a.dueDate).getTime()
+            : Number.MAX_SAFE_INTEGER;
+          valueB = b.dueDate
+            ? new Date(b.dueDate).getTime()
+            : Number.MAX_SAFE_INTEGER;
           break;
         case "timeEstimate":
           // Convert all estimates to minutes for comparison
@@ -184,7 +193,17 @@ const AllWorkPage = () => {
     });
 
     setFilteredItems(filtered);
-  }, [searchQuery, projectFilter, typeFilter, statusFilter, assigneeFilter, dueDateFilter, sortField, sortDirection, workItems]);
+  }, [
+    searchQuery,
+    projectFilter,
+    typeFilter,
+    statusFilter,
+    assigneeFilter,
+    dueDateFilter,
+    sortField,
+    sortDirection,
+    workItems,
+  ]);
 
   // Convert time estimate to minutes for sorting
   const convertToMinutes = (estimate) => {
@@ -207,7 +226,7 @@ const AllWorkPage = () => {
 
   // Format date to readable format
   const formatDate = (date) => {
-    if (typeof date === 'string') {
+    if (typeof date === "string") {
       date = new Date(date);
     }
 
@@ -229,7 +248,7 @@ const AllWorkPage = () => {
   // Handle updating a work item
   const handleUpdateItem = (updatedItem) => {
     // Update the item in the workItems array
-    const updatedItems = workItems.map(item =>
+    const updatedItems = workItems.map((item) =>
       item.id === updatedItem.id ? updatedItem : item
     );
 
@@ -245,7 +264,8 @@ const AllWorkPage = () => {
           id: "item-1",
           key: "CRM-18",
           summary: "Create the about us page",
-          description: "Design and implement the about us page with team information",
+          description:
+            "Design and implement the about us page with team information",
           type: "task",
           status: "DONE",
           priority: "Medium",
@@ -265,7 +285,7 @@ const AllWorkPage = () => {
               from: "TO DO",
               to: "IN PROGRESS",
               user: { id: "user-1", name: "John Doe", avatar: "JD" },
-              timestamp: "2023-05-12T09:15:00Z"
+              timestamp: "2023-05-12T09:15:00Z",
             },
             {
               id: "act-2",
@@ -273,9 +293,9 @@ const AllWorkPage = () => {
               from: "IN PROGRESS",
               to: "DONE",
               user: { id: "user-1", name: "John Doe", avatar: "JD" },
-              timestamp: "2023-05-15T14:20:00Z"
-            }
-          ]
+              timestamp: "2023-05-15T14:20:00Z",
+            },
+          ],
         },
         {
           id: "item-2",
@@ -301,9 +321,9 @@ const AllWorkPage = () => {
               from: "TO DO",
               to: "IN PROGRESS",
               user: { id: "user-2", name: "Jane Smith", avatar: "JS" },
-              timestamp: "2023-05-14T16:45:00Z"
-            }
-          ]
+              timestamp: "2023-05-14T16:45:00Z",
+            },
+          ],
         },
         {
           id: "item-3",
@@ -322,13 +342,14 @@ const AllWorkPage = () => {
           labels: ["Database", "Backend"],
           dueDate: "2023-05-25T17:00:00Z",
           timeEstimate: { value: "2", unit: "days" },
-          activity: []
+          activity: [],
         },
         {
           id: "item-4",
           key: "CRM-15",
           summary: "Fix login page styling",
-          description: "Fix the styling issues on the login page for mobile devices",
+          description:
+            "Fix the styling issues on the login page for mobile devices",
           type: "bug",
           status: "TO DO",
           priority: "Medium",
@@ -341,7 +362,7 @@ const AllWorkPage = () => {
           labels: ["UI", "Bug", "Mobile"],
           dueDate: "2023-05-15T17:00:00Z", // Past due date
           timeEstimate: { value: "3", unit: "hours" },
-          activity: []
+          activity: [],
         },
         {
           id: "item-5",
@@ -359,9 +380,9 @@ const AllWorkPage = () => {
           sprint: { id: "sprint-2", name: "CRM Sprint 2" },
           labels: ["UI", "Dashboard"],
           timeEstimate: { value: "1", unit: "week" },
-          activity: []
-        }
-      ]
+          activity: [],
+        },
+      ],
     };
   };
 
@@ -407,188 +428,235 @@ const AllWorkPage = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-full">Loading...</div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     // <div className="flex justify-center items-center h-full">Loading...</div>
+  //     <div className="flex justify-center items-center h-full">
+  //       <Skeleton count={5} width={1000} height={50} className="my-4" />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="p-4 max-w-[1200px] mx-auto">
       <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-2">
-          <h1 className="text-xl font-semibold">All Work</h1>
-          <div className="flex items-center text-sm text-gray-500">
-            <span className="mx-1">/</span>
-            <span>{projectSlug}</span>
+        {loading ? (
+          <Skeleton width={100} height={30} />
+        ) : (
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-semibold">All Work</h1>
+            <div className="flex items-center text-sm text-gray-500">
+              <span className="mx-1">/</span>
+              <span>{projectSlug}</span>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            Export
-          </Button>
-          <Button variant="outline" size="sm">
-            Share
-          </Button>
+          {loading ? (
+            <Skeleton width={100} height={30} />
+          ) : (
+            <Button variant="outline" size="sm">
+              Export
+            </Button>
+          )}
+          {loading ? (
+            <Skeleton width={100} height={30} />
+          ) : (
+            <Button variant="outline" size="sm">
+              Share
+            </Button>
+          )}
         </div>
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-2 mb-4">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Search work items"
-            className="pl-10"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+      {loading ? (
+        <Skeleton width={1000} height={30}  className="mb-4" />
+      ) : (
+        <div className="flex items-center gap-2 mb-4">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search work items"
+              className="pl-10"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1"
+              >
+                Project <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => setProjectFilter("all")}>
+                All Projects
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setProjectFilter("CRM")}>
+                CRM
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1"
+              >
+                Type <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => setTypeFilter("all")}>
+                All Types
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTypeFilter("task")}>
+                <CheckSquare className="h-4 w-4 text-blue-500 mr-2" /> Task
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTypeFilter("bug")}>
+                <AlertCircle className="h-4 w-4 text-red-500 mr-2" /> Bug
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTypeFilter("story")}>
+                <Bookmark className="h-4 w-4 text-green-500 mr-2" /> Story
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1"
+              >
+                Status <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => setStatusFilter("all")}>
+                All Statuses
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setStatusFilter("TO DO")}>
+                To Do
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setStatusFilter("IN PROGRESS")}>
+                In Progress
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setStatusFilter("DONE")}>
+                Done
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1"
+              >
+                Assignee <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => setAssigneeFilter("all")}>
+                All Assignees
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setAssigneeFilter("unassigned")}>
+                Unassigned
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setAssigneeFilter("user-1")}>
+                <div className="flex items-center gap-2">
+                  <Avatar className="h-6 w-6">
+                    <AvatarFallback>JD</AvatarFallback>
+                  </Avatar>
+                  <span>John Doe</span>
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setAssigneeFilter("user-2")}>
+                <div className="flex items-center gap-2">
+                  <Avatar className="h-6 w-6">
+                    <AvatarFallback>JS</AvatarFallback>
+                  </Avatar>
+                  <span>Jane Smith</span>
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setAssigneeFilter("user-3")}>
+                <div className="flex items-center gap-2">
+                  <Avatar className="h-6 w-6">
+                    <AvatarFallback>RB</AvatarFallback>
+                  </Avatar>
+                  <span>Robert Brown</span>
+                </div>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1"
+              >
+                <CalendarClock className="h-4 w-4 mr-1" /> Due Date{" "}
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => setDueDateFilter("all")}>
+                All Due Dates
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setDueDateFilter("overdue")}>
+                <div className="flex items-center gap-2 text-red-500">
+                  Overdue
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setDueDateFilter("today")}>
+                Due Today
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setDueDateFilter("thisWeek")}>
+                Due This Week
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setDueDateFilter("nextWeek")}>
+                Due Next Week
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setSearchQuery("");
+              setProjectFilter("all");
+              setTypeFilter("all");
+              setStatusFilter("all");
+              setAssigneeFilter("all");
+              setDueDateFilter("all");
+              setSortField("updated");
+              setSortDirection("desc");
+            }}
+          >
+            <X className="h-4 w-4 mr-1" /> Clear
+          </Button>
         </div>
+      )}
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="flex items-center gap-1">
-              Project <ChevronDown className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setProjectFilter("all")}>
-              All Projects
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setProjectFilter("CRM")}>
-              CRM
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="flex items-center gap-1">
-              Type <ChevronDown className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setTypeFilter("all")}>
-              All Types
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTypeFilter("task")}>
-              <CheckSquare className="h-4 w-4 text-blue-500 mr-2" /> Task
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTypeFilter("bug")}>
-              <AlertCircle className="h-4 w-4 text-red-500 mr-2" /> Bug
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTypeFilter("story")}>
-              <Bookmark className="h-4 w-4 text-green-500 mr-2" /> Story
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="flex items-center gap-1">
-              Status <ChevronDown className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setStatusFilter("all")}>
-              All Statuses
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setStatusFilter("TO DO")}>
-              To Do
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setStatusFilter("IN PROGRESS")}>
-              In Progress
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setStatusFilter("DONE")}>
-              Done
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="flex items-center gap-1">
-              Assignee <ChevronDown className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setAssigneeFilter("all")}>
-              All Assignees
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setAssigneeFilter("unassigned")}>
-              Unassigned
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setAssigneeFilter("user-1")}>
-              <div className="flex items-center gap-2">
-                <Avatar className="h-6 w-6">
-                  <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
-                <span>John Doe</span>
-              </div>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setAssigneeFilter("user-2")}>
-              <div className="flex items-center gap-2">
-                <Avatar className="h-6 w-6">
-                  <AvatarFallback>JS</AvatarFallback>
-                </Avatar>
-                <span>Jane Smith</span>
-              </div>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setAssigneeFilter("user-3")}>
-              <div className="flex items-center gap-2">
-                <Avatar className="h-6 w-6">
-                  <AvatarFallback>RB</AvatarFallback>
-                </Avatar>
-                <span>Robert Brown</span>
-              </div>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="flex items-center gap-1">
-              <CalendarClock className="h-4 w-4 mr-1" /> Due Date <ChevronDown className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setDueDateFilter("all")}>
-              All Due Dates
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setDueDateFilter("overdue")}>
-              <div className="flex items-center gap-2 text-red-500">
-                Overdue
-              </div>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setDueDateFilter("today")}>
-              Due Today
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setDueDateFilter("thisWeek")}>
-              Due This Week
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setDueDateFilter("nextWeek")}>
-              Due Next Week
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <Button variant="outline" size="sm" onClick={() => {
-          setSearchQuery("");
-          setProjectFilter("all");
-          setTypeFilter("all");
-          setStatusFilter("all");
-          setAssigneeFilter("all");
-          setDueDateFilter("all");
-          setSortField("updated");
-          setSortDirection("desc");
-        }}>
-          <X className="h-4 w-4 mr-1" /> Clear
-        </Button>
-      </div>
-
-      {/* Work Items Table */}
+      {loading ? (
+        <Skeleton width={1160} height={30} count={5} className="mb-4" />
+      ) : (
+      // Work Items Table 
       <div className="bg-white rounded-md border">
         <Table>
           <TableHeader>
@@ -600,13 +668,19 @@ const AllWorkPage = () => {
                 className="w-[80px] cursor-pointer hover:bg-gray-50"
                 onClick={() => {
                   setSortField("key");
-                  setSortDirection(sortField === "key" && sortDirection === "asc" ? "desc" : "asc");
+                  setSortDirection(
+                    sortField === "key" && sortDirection === "asc"
+                      ? "desc"
+                      : "asc"
+                  );
                 }}
               >
                 <div className="flex items-center">
                   Key
                   {sortField === "key" && (
-                    <span className="ml-1">{sortDirection === "asc" ? "↑" : "↓"}</span>
+                    <span className="ml-1">
+                      {sortDirection === "asc" ? "↑" : "↓"}
+                    </span>
                   )}
                 </div>
               </TableHead>
@@ -618,13 +692,19 @@ const AllWorkPage = () => {
                 className="w-[80px] cursor-pointer hover:bg-gray-50"
                 onClick={() => {
                   setSortField("priority");
-                  setSortDirection(sortField === "priority" && sortDirection === "asc" ? "desc" : "asc");
+                  setSortDirection(
+                    sortField === "priority" && sortDirection === "asc"
+                      ? "desc"
+                      : "asc"
+                  );
                 }}
               >
                 <div className="flex items-center">
                   Priority
                   {sortField === "priority" && (
-                    <span className="ml-1">{sortDirection === "asc" ? "↑" : "↓"}</span>
+                    <span className="ml-1">
+                      {sortDirection === "asc" ? "↑" : "↓"}
+                    </span>
                   )}
                 </div>
               </TableHead>
@@ -632,14 +712,20 @@ const AllWorkPage = () => {
                 className="w-[120px] cursor-pointer hover:bg-gray-50"
                 onClick={() => {
                   setSortField("dueDate");
-                  setSortDirection(sortField === "dueDate" && sortDirection === "asc" ? "desc" : "asc");
+                  setSortDirection(
+                    sortField === "dueDate" && sortDirection === "asc"
+                      ? "desc"
+                      : "asc"
+                  );
                 }}
               >
                 <div className="flex items-center">
                   <CalendarClock className="h-4 w-4 mr-1" />
                   Due Date
                   {sortField === "dueDate" && (
-                    <span className="ml-1">{sortDirection === "asc" ? "↑" : "↓"}</span>
+                    <span className="ml-1">
+                      {sortDirection === "asc" ? "↑" : "↓"}
+                    </span>
                   )}
                 </div>
               </TableHead>
@@ -647,14 +733,20 @@ const AllWorkPage = () => {
                 className="w-[100px] cursor-pointer hover:bg-gray-50"
                 onClick={() => {
                   setSortField("timeEstimate");
-                  setSortDirection(sortField === "timeEstimate" && sortDirection === "asc" ? "desc" : "asc");
+                  setSortDirection(
+                    sortField === "timeEstimate" && sortDirection === "asc"
+                      ? "desc"
+                      : "asc"
+                  );
                 }}
               >
                 <div className="flex items-center">
                   <Timer className="h-4 w-4 mr-1" />
                   Estimate
                   {sortField === "timeEstimate" && (
-                    <span className="ml-1">{sortDirection === "asc" ? "↑" : "↓"}</span>
+                    <span className="ml-1">
+                      {sortDirection === "asc" ? "↑" : "↓"}
+                    </span>
                   )}
                 </div>
               </TableHead>
@@ -664,7 +756,10 @@ const AllWorkPage = () => {
           <TableBody>
             {filteredItems.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                <TableCell
+                  colSpan={8}
+                  className="text-center py-8 text-gray-500"
+                >
                   No work items found
                 </TableCell>
               </TableRow>
@@ -672,7 +767,9 @@ const AllWorkPage = () => {
               filteredItems.map((item) => (
                 <TableRow
                   key={item.id}
-                  className={`cursor-pointer ${selectedItem?.id === item.id ? 'bg-blue-50' : ''}`}
+                  className={`cursor-pointer ${
+                    selectedItem?.id === item.id ? "bg-blue-50" : ""
+                  }`}
                   onClick={() => handleSelectItem(item)}
                 >
                   <TableCell>
@@ -686,7 +783,11 @@ const AllWorkPage = () => {
                       {item.labels && item.labels.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-1">
                           {item.labels.map((label, index) => (
-                            <Badge key={index} variant="outline" className="text-xs">
+                            <Badge
+                              key={index}
+                              variant="outline"
+                              className="text-xs"
+                            >
                               {label}
                             </Badge>
                           ))}
@@ -703,7 +804,9 @@ const AllWorkPage = () => {
                     {item.assignee ? (
                       <div className="flex items-center gap-2">
                         <Avatar className="h-6 w-6">
-                          <AvatarFallback>{item.assignee.avatar}</AvatarFallback>
+                          <AvatarFallback>
+                            {item.assignee.avatar}
+                          </AvatarFallback>
                         </Avatar>
                         <span className="text-sm">{item.assignee.name}</span>
                       </div>
@@ -719,9 +822,13 @@ const AllWorkPage = () => {
                   </TableCell>
                   <TableCell>
                     {item.dueDate ? (
-                      <div className={`flex items-center gap-1 text-sm ${
-                        new Date(item.dueDate) < new Date() ? 'text-red-500 font-medium' : ''
-                      }`}>
+                      <div
+                        className={`flex items-center gap-1 text-sm ${
+                          new Date(item.dueDate) < new Date()
+                            ? "text-red-500 font-medium"
+                            : ""
+                        }`}
+                      >
                         <CalendarClock className="h-4 w-4" />
                         {formatDate(new Date(item.dueDate))}
                       </div>
@@ -736,13 +843,20 @@ const AllWorkPage = () => {
                         {item.timeEstimate.value} {item.timeEstimate.unit}
                       </div>
                     ) : (
-                      <span className="text-gray-400 text-sm">Not estimated</span>
+                      <span className="text-gray-400 text-sm">
+                        Not estimated
+                      </span>
                     )}
                   </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => {
-                      e.stopPropagation();
-                    }}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </TableCell>
@@ -752,6 +866,8 @@ const AllWorkPage = () => {
           </TableBody>
         </Table>
       </div>
+
+      )}
 
       {/* Work Item Details Panel */}
       {detailsOpen && selectedItem && (

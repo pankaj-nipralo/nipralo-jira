@@ -25,6 +25,7 @@ import {
 import BacklogItem from "@/components/backlog/BacklogItem";
 import AddBacklogItemModal from "@/components/backlog/AddBacklogItemModal";
 import EditBacklogItemModal from "@/components/backlog/EditBacklogItemModal";
+import EmptySprintDropTarget from "@/components/backlog/EmptySprintDropTarget";
 
 const BacklogPage = () => {
   const params = useParams();
@@ -1036,22 +1037,31 @@ const BacklogPage = () => {
 
             {expandedSprints[sprint.id] && (
               <div className="border-t">
-                {sprint.items.map((item, index) => (
-                  <BacklogItem
-                    key={item.id}
-                    item={{ ...item, index }}
-                    onEdit={() => {
-                      setSelectedItem(item);
-                      setIsEditModalOpen(true);
-                    }}
-                    onDelete={() => handleDeleteItem(item.id)}
-                    containerType="sprint"
+                {sprint.items.length > 0 ? (
+                  // Render items if sprint has items
+                  sprint.items.map((item, index) => (
+                    <BacklogItem
+                      key={item.id}
+                      item={{ ...item, index }}
+                      onEdit={() => {
+                        setSelectedItem(item);
+                        setIsEditModalOpen(true);
+                      }}
+                      onDelete={() => handleDeleteItem(item.id)}
+                      containerType="sprint"
+                      containerId={sprint.id}
+                      onMoveItem={handleMoveItem}
+                      isFiltered={item._filterInfo?.isFiltered}
+                      filterType={item._filterInfo?.filterType}
+                    />
+                  ))
+                ) : (
+                  // Render empty sprint drop target if sprint has no items
+                  <EmptySprintDropTarget
                     containerId={sprint.id}
                     onMoveItem={handleMoveItem}
-                    isFiltered={item._filterInfo?.isFiltered}
-                    filterType={item._filterInfo?.filterType}
                   />
-                ))}
+                )}
                 <div className="px-4 py-2 border-t">
                   <Button
                     variant="ghost"
