@@ -16,13 +16,7 @@ const initialProjects = [
     description: "Team-managed software",
     workItems: { open: 0 },
     slug: "warpp",
-  },
-  {
-    title: "Ruby Print",
-    description: "Team-managed software",
-    workItems: { open: 3 },
-    slug: "ruby-print",
-  },
+  }, 
   {
     title: "Warpp",
     description: "Team-managed software",
