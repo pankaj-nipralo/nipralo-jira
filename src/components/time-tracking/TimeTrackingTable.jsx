@@ -20,6 +20,44 @@ import {
 } from "lucide-react";
 import { formatDate } from './timeTrackingData';
 
+// Format time as "X h Y m" format
+const formatTime = (time) => {
+  // Handle invalid inputs (null, undefined, NaN)
+  if (time === null || time === undefined) {
+    return '0 h 0 m';
+  }
+
+  // Handle time object with hours and minutes properties
+  if (typeof time === 'object' && time.hours !== undefined) {
+    const h = time.hours || 0;
+    const m = time.minutes || 0;
+    return `${h} h ${m} m`;
+  }
+
+  // Handle numeric input (for backward compatibility and totals)
+  if (typeof time === 'number' || !isNaN(Number(time))) {
+    // If it's 0, return 0 h 0 m
+    if (Number(time) === 0) {
+      return '0 h 0 m';
+    }
+
+    // Convert decimal hours to hours and minutes
+    const numHours = Number(time);
+    const h = Math.floor(numHours);
+    const m = Math.round((numHours - h) * 60);
+
+    // Handle case where minutes round up to 60
+    if (m === 60) {
+      return `${h + 1} h 0 m`;
+    }
+
+    return `${h} h ${m} m`;
+  }
+
+  // Fallback for any other case
+  return '0 h 0 m';
+};
+
 const TimeTrackingTable = ({
   timeEntries,
   onEdit,
@@ -40,6 +78,17 @@ const TimeTrackingTable = ({
     }
   };
 
+  // Helper function to convert timeSpent to minutes for comparison
+  const getTimeInMinutes = (timeSpent) => {
+    if (typeof timeSpent === 'object' && timeSpent.hours !== undefined) {
+      return (timeSpent.hours * 60) + (timeSpent.minutes || 0);
+    }
+    if (typeof timeSpent === 'number') {
+      return timeSpent * 60; // Convert decimal hours to minutes
+    }
+    return 0;
+  };
+
   // Sort entries
   const sortedEntries = [...timeEntries].sort((a, b) => {
     let valueA = a[sortField];
@@ -49,6 +98,12 @@ const TimeTrackingTable = ({
     if (sortField === 'date') {
       valueA = new Date(valueA);
       valueB = new Date(valueB);
+    }
+
+    // Handle timeSpent comparison
+    if (sortField === 'timeSpent') {
+      valueA = getTimeInMinutes(valueA);
+      valueB = getTimeInMinutes(valueB);
     }
 
     // Handle string comparison
@@ -156,7 +211,7 @@ const TimeTrackingTable = ({
                   <TableCell>{entry.teamMemberName}</TableCell>
                   <TableCell>{entry.epicName}</TableCell>
                   <TableCell>{entry.taskDescription}</TableCell>
-                  <TableCell>{entry.timeSpent} hrs</TableCell>
+                  <TableCell>{formatTime(entry.timeSpent)}</TableCell>
                   <TableCell>{getStatusBadge(entry.status)}</TableCell>
                   <TableCell>
                     <div className="flex justify-end gap-2">

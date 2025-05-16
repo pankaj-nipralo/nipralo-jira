@@ -34,7 +34,8 @@ const TimeEntryModal = ({
     teamMemberId: '',
     epicId: '',
     taskDescription: '',
-    timeSpent: '',
+    hours: '',
+    minutes: '',
     status: 'submitted'
   };
 
@@ -44,20 +45,37 @@ const TimeEntryModal = ({
   // If editing an entry, populate the form
   useEffect(() => {
     if (editEntry) {
+      // Handle timeSpent as object or number
+      let hours = '';
+      let minutes = '';
+
+      if (typeof editEntry.timeSpent === 'object' && editEntry.timeSpent.hours !== undefined) {
+        hours = editEntry.timeSpent.hours.toString();
+        minutes = (editEntry.timeSpent.minutes || 0).toString();
+      } else if (typeof editEntry.timeSpent === 'number') {
+        // Convert decimal hours to hours and minutes
+        const wholeHours = Math.floor(editEntry.timeSpent);
+        const decimalMinutes = Math.round((editEntry.timeSpent - wholeHours) * 60);
+
+        hours = wholeHours.toString();
+        minutes = decimalMinutes.toString();
+      }
+
       setFormData({
         id: editEntry.id,
         date: editEntry.date,
         teamMemberId: editEntry.teamMemberId,
         epicId: editEntry.epicId,
         taskDescription: editEntry.taskDescription,
-        timeSpent: editEntry.timeSpent.toString(),
+        hours,
+        minutes,
         status: editEntry.status
       });
     } else {
       setFormData(initialFormState);
     }
     setErrors({});
-  }, [editEntry, isOpen]);
+  }, [editEntry, isOpen, initialFormState]);
 
   // Handle form input changes
   const handleChange = (e) => {
@@ -112,10 +130,20 @@ const TimeEntryModal = ({
       newErrors.taskDescription = 'Task description is required';
     }
 
-    if (!formData.timeSpent) {
-      newErrors.timeSpent = 'Time spent is required';
-    } else if (isNaN(formData.timeSpent) || parseFloat(formData.timeSpent) <= 0) {
-      newErrors.timeSpent = 'Time spent must be a positive number';
+    if (!formData.hours && !formData.minutes) {
+      newErrors.hours = 'Hours or minutes are required';
+    } else {
+      if (formData.hours && (isNaN(formData.hours) || parseInt(formData.hours) < 0)) {
+        newErrors.hours = 'Hours must be a non-negative number';
+      }
+      if (formData.minutes && (isNaN(formData.minutes) || parseInt(formData.minutes) < 0 || parseInt(formData.minutes) >= 60)) {
+        newErrors.minutes = 'Minutes must be between 0 and 59';
+      }
+      // Ensure at least one of hours or minutes is greater than 0
+      if ((!formData.hours || parseInt(formData.hours) === 0) &&
+          (!formData.minutes || parseInt(formData.minutes) === 0)) {
+        newErrors.hours = 'Total time must be greater than 0';
+      }
     }
 
     setErrors(newErrors);
@@ -131,12 +159,19 @@ const TimeEntryModal = ({
       const teamMember = teamMembers.find(member => member.id === formData.teamMemberId);
       const epic = epics.find(ep => ep.id === formData.epicId);
 
+      // Convert hours and minutes to timeSpent object
+      const hours = formData.hours ? parseInt(formData.hours) : 0;
+      const minutes = formData.minutes ? parseInt(formData.minutes) : 0;
+
       // Prepare data for saving
       const entryData = {
         ...formData,
         teamMemberName: teamMember ? teamMember.name : '',
         epicName: epic ? epic.name : '',
-        timeSpent: parseFloat(formData.timeSpent)
+        timeSpent: {
+          hours,
+          minutes
+        }
       };
 
       onSave(entryData);
@@ -172,21 +207,42 @@ const TimeEntryModal = ({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="timeSpent">Hours Spent</Label>
-                <Input
-                  id="timeSpent"
-                  name="timeSpent"
-                  type="number"
-                  step="0.5"
-                  min="0.5"
-                  placeholder="0.0"
-                  value={formData.timeSpent}
-                  onChange={handleChange}
-                  className={errors.timeSpent ? 'border-red-500' : ''}
-                />
-                {errors.timeSpent && (
-                  <p className="text-red-500 text-xs mt-1">{errors.timeSpent}</p>
-                )}
+                <Label htmlFor="hours">Time Spent</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Input
+                      id="hours"
+                      name="hours"
+                      type="number"
+                      min="0"
+                      placeholder="0"
+                      value={formData.hours}
+                      onChange={handleChange}
+                      className={errors.hours ? 'border-red-500' : ''}
+                    />
+                    <span className="text-xs text-muted-foreground">Hours</span>
+                    {errors.hours && (
+                      <p className="text-red-500 text-xs mt-1">{errors.hours}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Input
+                      id="minutes"
+                      name="minutes"
+                      type="number"
+                      min="0"
+                      max="59"
+                      placeholder="0"
+                      value={formData.minutes}
+                      onChange={handleChange}
+                      className={errors.minutes ? 'border-red-500' : ''}
+                    />
+                    <span className="text-xs text-muted-foreground">Minutes</span>
+                    {errors.minutes && (
+                      <p className="text-red-500 text-xs mt-1">{errors.minutes}</p>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 

@@ -105,7 +105,7 @@ const timeEntries = [
   },
   {
     id: 8,
-    date: "2023-06-05",
+    date: "2025-05-16",
     teamMemberId: "user-2",
     teamMemberName: "Shoaib Ansari",
     epicId: "proj-3",
@@ -155,10 +155,11 @@ const timeEntries = [
     epicName: "Analytics Dashboard",
     taskDescription: "Data visualization components",
     timeSpent: {
-      hours: 4,
+      hours: 9,
       minutes: 0,
     },
   },
+  
 ];
 // For backward compatibility, we're keeping both project and epic terminology
 export const projects = [

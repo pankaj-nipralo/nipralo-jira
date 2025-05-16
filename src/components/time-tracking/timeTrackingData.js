@@ -8,7 +8,10 @@ export const timeEntries = [
     epicId: "proj-1",
     epicName: "Website Redesign",
     taskDescription: "Homepage UI development",
-    timeSpent: 4.5,
+       timeSpent: {
+      hours: 4,
+      minutes: 30,
+    },
     status: "approved",
   },
   {
@@ -19,7 +22,10 @@ export const timeEntries = [
     epicId: "proj-1",
     epicName: "Website Redesign",
     taskDescription: "API integration for contact form",
-    timeSpent: 3,
+       timeSpent: {
+      hours: 4,
+      minutes: 30,
+    },
     status: "approved",
   },
   {
@@ -30,7 +36,10 @@ export const timeEntries = [
     epicId: "proj-1",
     epicName: "Website Redesign",
     taskDescription: "Responsive design fixes",
-    timeSpent: 2.5,
+       timeSpent: {
+      hours: 4,
+      minutes: 30,
+    },
     status: "approved",
   },
   {
@@ -41,7 +50,10 @@ export const timeEntries = [
     epicId: "proj-2",
     epicName: "Mobile App Development",
     taskDescription: "User authentication implementation",
-    timeSpent: 6,
+       timeSpent: {
+      hours: 4,
+      minutes: 30,
+    },
     status: "approved",
   },
   {
@@ -52,7 +64,10 @@ export const timeEntries = [
     epicId: "proj-2",
     epicName: "Mobile App Development",
     taskDescription: "UI design for settings screen",
-    timeSpent: 4,
+       timeSpent: {
+      hours: 4,
+      minutes: 30,
+    },
     status: "approved",
   },
   {
@@ -63,7 +78,10 @@ export const timeEntries = [
     epicId: "proj-3",
     epicName: "E-commerce Platform",
     taskDescription: "Payment gateway integration",
-    timeSpent: 5.5,
+       timeSpent: {
+      hours: 4,
+      minutes: 30,
+    },
     status: "approved",
   },
   {
@@ -74,7 +92,10 @@ export const timeEntries = [
     epicId: "proj-3",
     epicName: "E-commerce Platform",
     taskDescription: "Product listing page optimization",
-    timeSpent: 3.5,
+       timeSpent: {
+      hours: 4,
+      minutes: 30,
+    },
     status: "approved",
   },
   {
@@ -85,7 +106,10 @@ export const timeEntries = [
     epicId: "proj-1",
     epicName: "Website Redesign",
     taskDescription: "SEO improvements",
-    timeSpent: 2,
+       timeSpent: {
+      hours: 4,
+      minutes: 30,
+    },
     status: "rejected",
   },
   {
@@ -96,7 +120,10 @@ export const timeEntries = [
     epicId: "proj-2",
     epicName: "Mobile App Development",
     taskDescription: "Bug fixes for iOS version",
-    timeSpent: 4,
+       timeSpent: {
+      hours: 4,
+      minutes: 30,
+    },
     status: "submitted",
   },
   {
@@ -107,7 +134,10 @@ export const timeEntries = [
     epicId: "proj-3",
     epicName: "E-commerce Platform",
     taskDescription: "Cart functionality improvements",
-    timeSpent: 3,
+       timeSpent: {
+      hours: 4,
+      minutes: 30,
+    },
     status: "submitted",
   },
   {
@@ -118,7 +148,10 @@ export const timeEntries = [
     epicId: "proj-2",
     epicName: "Mobile App Development",
     taskDescription: "Push notification system",
-    timeSpent: 5,
+       timeSpent: {
+      hours: 4,
+      minutes: 30,
+    },
     status: "submitted",
   },
   {
@@ -129,7 +162,10 @@ export const timeEntries = [
     epicId: "proj-3",
     epicName: "E-commerce Platform",
     taskDescription: "User reviews implementation",
-    timeSpent: 4.5,
+       timeSpent: {
+      hours: 4,
+      minutes: 30,
+    },
     status: "submitted",
   },
   {
@@ -140,7 +176,10 @@ export const timeEntries = [
     epicId: "proj-4",
     epicName: "CRM System",
     taskDescription: "Performance optimization",
-    timeSpent: 7.5,
+       timeSpent: {
+      hours: 4,
+      minutes: 30,
+    },
     status: "approved",
   },
   {
@@ -151,7 +190,10 @@ export const timeEntries = [
     epicId: "proj-2",
     epicName: "Mobile App Development",
     taskDescription: "Code review and refactoring",
-    timeSpent: 3.5,
+       timeSpent: {
+      hours: 4,
+      minutes: 30,
+    },
     status: "approved",
   },
   {
@@ -162,7 +204,10 @@ export const timeEntries = [
     epicId: "proj-1",
     epicName: "Website Redesign",
     taskDescription: "Documentation updates",
-    timeSpent: 2.5,
+       timeSpent: {
+      hours: 4,
+      minutes: 30,
+    },
     status: "approved",
   },
 ];

@@ -235,12 +235,6 @@ const BacklogItem = ({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={onEdit}>Edit</DropdownMenuItem>
-            <DropdownMenuItem>
-              Move to top
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              Move to bottom
-            </DropdownMenuItem>
             <DropdownMenuSeparator />
             {/* Change Epic option */}
             <DropdownMenuItem onClick={() => window.dispatchEvent(new CustomEvent('change-epic', { detail: item }))}>

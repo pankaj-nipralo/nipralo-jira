@@ -12,16 +12,48 @@ import {
   Tooltip,
   ResponsiveContainer,
   LabelList,
-  Cell
+  Cell,
+  ReferenceLine
 } from 'recharts';
 
 const TaskTrackingSummary = ({ timeEntries }) => {
+  // Helper function to get time in minutes
+  const getTimeInMinutes = (timeSpent) => {
+    if (typeof timeSpent === 'object' && timeSpent.hours !== undefined) {
+      return (timeSpent.hours * 60) + (timeSpent.minutes || 0);
+    }
+    if (typeof timeSpent === 'number') {
+      return timeSpent * 60; // Convert decimal hours to minutes
+    }
+    return 0;
+  };
+
+  // Helper function to add time
+  const addTime = (totalTime, timeToAdd) => {
+    // Initialize if needed
+    if (!totalTime || typeof totalTime !== 'object') {
+      totalTime = { hours: 0, minutes: 0 };
+    }
+
+    // Get minutes from timeToAdd
+    const minutesToAdd = getTimeInMinutes(timeToAdd);
+
+    // Add to total
+    const totalMinutes = (totalTime.hours * 60) + (totalTime.minutes || 0) + minutesToAdd;
+
+    // Convert back to hours and minutes
+    return {
+      hours: Math.floor(totalMinutes / 60),
+      minutes: totalMinutes % 60
+    };
+  };
+
   // Calculate summary statistics
   const summaryData = useMemo(() => {
     // Total hours
     const totalHours = timeEntries.reduce(
-      (sum, entry) => sum + entry.timeSpent,
-      0
+      (total, entry) => addTime(total, entry.timeSpent),
+      { hours: 0, minutes: 0 }
     );
 
     // Hours by team member
@@ -31,10 +63,10 @@ const TaskTrackingSummary = ({ timeEntries }) => {
         acc[memberId] = {
           id: memberId,
           name: entry.teamMemberName,
-          hours: 0,
+          hours: { hours: 0, minutes: 0 },
         };
       }
-      acc[memberId].hours += entry.timeSpent;
+      acc[memberId].hours = addTime(acc[memberId].hours, entry.timeSpent);
       return acc;
     }, {});
 
@@ -45,10 +77,10 @@ const TaskTrackingSummary = ({ timeEntries }) => {
         acc[epicId] = {
           id: epicId,
           name: entry.epicName,
-          hours: 0,
+          hours: { hours: 0, minutes: 0 },
         };
       }
-      acc[epicId].hours += entry.timeSpent;
+      acc[epicId].hours = addTime(acc[epicId].hours, entry.timeSpent);
       return acc;
     }, {});
 
@@ -58,28 +90,118 @@ const TaskTrackingSummary = ({ timeEntries }) => {
       if (!acc[status]) {
         acc[status] = {
           status,
-          hours: 0,
+          hours: { hours: 0, minutes: 0 },
         };
       }
-      acc[status].hours += entry.timeSpent;
+      acc[status].hours = addTime(acc[status].hours, entry.timeSpent);
       return acc;
     }, {});
 
+    // Convert time objects to numeric values for charts
+    const convertTimeToNumeric = (timeObj) => {
+      if (typeof timeObj === 'object' && timeObj.hours !== undefined) {
+        // Ensure we return a valid number
+        const hours = Number(timeObj.hours) || 0;
+        const minutes = Number(timeObj.minutes) || 0;
+        return hours + (minutes / 60);
+      }
+      if (typeof timeObj === 'number') {
+        return timeObj;
+      }
+      return 0;
+    };
+
+    // Process hoursByMember for chart display
+    const processedHoursByMember = Object.values(hoursByMember).map(member => {
+      // Ensure we have a valid numeric value for the chart
+      const numericHours = Math.max(0.1, convertTimeToNumeric(member.hours));
+      return {
+        ...member,
+        // Keep the original hours object for formatting
+        originalHours: member.hours,
+        // Add a numeric value for the chart
+        hours: numericHours,
+        // Add a numeric value for debugging
+        numericHours: numericHours
+      };
+    });
+
+    // Process hoursByEpic for chart display
+    const processedHoursByEpic = Object.values(hoursByEpic).map(epic => {
+      // Ensure we have a valid numeric value for the chart
+      const numericHours = Math.max(0.1, convertTimeToNumeric(epic.hours));
+      return {
+        ...epic,
+        // Keep the original hours object for formatting
+        originalHours: epic.hours,
+        // Add a numeric value for the chart
+        hours: numericHours,
+        // Add a numeric value for debugging
+        numericHours: numericHours
+      };
+    });
+
+    // Sort by numeric hours
+    const sortedHoursByMember = [...processedHoursByMember].sort((a, b) => b.numericHours - a.numericHours);
+    const sortedHoursByEpic = [...processedHoursByEpic].sort((a, b) => b.numericHours - a.numericHours);
+
+    // Log for debugging
+    console.log('Processed Member Data:', sortedHoursByMember);
+    console.log('Processed Epic Data:', sortedHoursByEpic);
+
     return {
       totalHours,
-      hoursByMember: Object.values(hoursByMember).sort(
-        (a, b) => b.hours - a.hours
-      ),
-      hoursByEpic: Object.values(hoursByEpic).sort(
-        (a, b) => b.hours - a.hours
-      ),
+      hoursByMember: sortedHoursByMember,
+      hoursByEpic: sortedHoursByEpic,
       hoursByStatus: Object.values(hoursByStatus),
     };
   }, [timeEntries]);
 
-  // Format hours with 1 decimal place
-  const formatHours = (hours) => {
-    return hours.toFixed(1);
+  // Format time as "X h Y m" format
+  const formatTime = (time) => {
+    try {
+      // Handle invalid inputs (null, undefined, NaN)
+      if (time === null || time === undefined) {
+        return '0 h 0 m';
+      }
+
+      // Check for originalHours property (used in chart data)
+      if (typeof time === 'object' && time.originalHours !== undefined) {
+        return formatTime(time.originalHours);
+      }
+
+      // Handle time object with hours and minutes properties
+      if (typeof time === 'object' && time.hours !== undefined) {
+        const h = time.hours || 0;
+        const m = time.minutes || 0;
+        return `${h} h ${m} m`;
+      }
+
+      // Handle numeric input (for backward compatibility and totals)
+      if (typeof time === 'number' || !isNaN(Number(time))) {
+        // If it's 0, return 0 h 0 m
+        if (Number(time) === 0) {
+          return '0 h 0 m';
+        }
+
+        // Convert decimal hours to hours and minutes
+        const numHours = Number(time);
+        const h = Math.floor(numHours);
+        const m = Math.round((numHours - h) * 60);
+
+        // Handle case where minutes round up to 60
+        if (m === 60) {
+          return `${h + 1} h 0 m`;
+        }
+
+        return `${h} h ${m} m`;
+      }
+    } catch (error) {
+      console.error("Error formatting time:", error, time);
+    }
+
+    // Fallback for any other case
+    return '0 h 0 m';
   };
 
   // Get status color
@@ -96,7 +218,9 @@ const TaskTrackingSummary = ({ timeEntries }) => {
     }
   };
 
-  // No custom chart functions needed with Recharts
+  // Debug output
+  console.log('Team Member Chart Data:', summaryData.hoursByMember);
+  console.log('Epic Chart Data:', summaryData.hoursByEpic);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -110,7 +234,7 @@ const TaskTrackingSummary = ({ timeEntries }) => {
         </CardHeader>
         <CardContent>
           <div className="text-3xl font-bold">
-            {formatHours(summaryData.totalHours)}
+            {formatTime(summaryData.totalHours)}
           </div>
           <div className="mt-2 text-sm text-muted-foreground">
             Hours tracked across all tasks
@@ -129,7 +253,7 @@ const TaskTrackingSummary = ({ timeEntries }) => {
                   {statusData.status}
                 </span>
                 <span className="font-medium">
-                  {formatHours(statusData.hours)} hrs
+                  {formatTime(statusData.hours)}
                 </span>
               </div>
             ))}
@@ -161,8 +285,11 @@ const TaskTrackingSummary = ({ timeEntries }) => {
                     left: 20,
                     bottom: 30,
                   }}
+                  barCategoryGap={10}
+                  barGap={5}
                 >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <ReferenceLine y={0} stroke="#E5E7EB" />
                   <XAxis
                     dataKey="name"
                     tick={{ fontSize: 12 }}
@@ -181,9 +308,17 @@ const TaskTrackingSummary = ({ timeEntries }) => {
                     tickFormatter={(value) => `${value} hrs`}
                     axisLine={{ stroke: '#E5E7EB' }}
                     tickLine={false}
+                    domain={[0, 'dataMax + 1']}
+                    allowDecimals={false}
                   />
                   <Tooltip
-                    formatter={(value) => [`${formatHours(value)} hrs`, 'Hours Tracked']}
+                    formatter={(value, name, props) => {
+                      // Use originalHours from the entry if available
+                      if (props.payload && props.payload.originalHours) {
+                        return [formatTime(props.payload.originalHours), 'Hours Tracked'];
+                      }
+                      return [formatTime(value), 'Hours Tracked'];
+                    }}
                     labelFormatter={(label) => `Team Member: ${label}`}
                     contentStyle={{
                       backgroundColor: 'white',
@@ -199,6 +334,8 @@ const TaskTrackingSummary = ({ timeEntries }) => {
                     barSize={40}
                     maxBarSize={60}
                     fill="#6366F1"
+                    minPointSize={3}
+                    isAnimationActive={true}
                   >
                     {/* Custom colors for each bar */}
                     {summaryData.hoursByMember.map((_, index) => {
@@ -212,7 +349,14 @@ const TaskTrackingSummary = ({ timeEntries }) => {
                     <LabelList
                       dataKey="hours"
                       position="top"
-                      formatter={(value) => formatHours(value)}
+                      formatter={(value, entry) => {
+                        // Check if entry and originalHours exist
+                        if (entry && entry.originalHours) {
+                          return formatTime(entry.originalHours);
+                        }
+                        // Fallback to the value if originalHours is not available
+                        return formatTime(value);
+                      }}
                       style={{
                         fill: '#4B5563',
                         fontSize: '0.75rem',
@@ -250,14 +394,19 @@ const TaskTrackingSummary = ({ timeEntries }) => {
                     left: 100,
                     bottom: 10,
                   }}
+                  barCategoryGap={10}
+                  barGap={5}
                 >
                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
+                  <ReferenceLine x={0} stroke="#E5E7EB" />
                   <XAxis
                     type="number"
                     tick={{ fontSize: 12 }}
                     tickLine={false}
                     axisLine={{ stroke: '#E5E7EB' }}
                     tickFormatter={(value) => `${value} hrs`}
+                    domain={[0, 'dataMax + 1']}
+                    allowDecimals={false}
                   />
                   <YAxis
                     type="category"
@@ -268,7 +417,13 @@ const TaskTrackingSummary = ({ timeEntries }) => {
                     tickLine={false}
                   />
                   <Tooltip
-                    formatter={(value) => [`${formatHours(value)} hrs`, 'Hours Tracked']}
+                    formatter={(value, name, props) => {
+                      // Use originalHours from the entry if available
+                      if (props.payload && props.payload.originalHours) {
+                        return [formatTime(props.payload.originalHours), 'Hours Tracked'];
+                      }
+                      return [formatTime(value), 'Hours Tracked'];
+                    }}
                     labelFormatter={(label) => `Epic: ${label}`}
                     contentStyle={{
                       backgroundColor: 'white',
@@ -282,6 +437,9 @@ const TaskTrackingSummary = ({ timeEntries }) => {
                     dataKey="hours"
                     radius={[0, 4, 4, 0]}
                     barSize={20}
+                    minPointSize={3}
+                    isAnimationActive={true}
+                    fill="#10B981"
                   >
                     {summaryData.hoursByEpic.map((_, index) => {
                       const colors = [
@@ -294,7 +452,14 @@ const TaskTrackingSummary = ({ timeEntries }) => {
                     <LabelList
                       dataKey="hours"
                       position="right"
-                      formatter={(value) => formatHours(value)}
+                      formatter={(value, entry) => {
+                        // Check if entry and originalHours exist
+                        if (entry && entry.originalHours) {
+                          return formatTime(entry.originalHours);
+                        }
+                        // Fallback to the value if originalHours is not available
+                        return formatTime(value);
+                      }}
                       style={{
                         fill: '#4B5563',
                         fontSize: '0.75rem',
