@@ -27,7 +27,10 @@ const AddBacklogItemModal = ({
     description: "",
     status: "TO DO",
     assignee: null,
-    estimate: "0m",
+    estimate: {
+      hours: 0,
+      minutes: 0
+    },
     labels: [],
     type: "task",
     priority: "Medium" // Default priority
@@ -44,7 +47,13 @@ const AddBacklogItemModal = ({
     { id: "user-2", name: "Jane Smith", avatar: "JS" },
     { id: "user-3", name: "Robert Brown", avatar: "RB" },
   ];
-  const estimateOptions = ["0m", "1h", "2h", "4h", "8h", "1d", "2d", "1w"];
+  // Format estimate for display
+  const formatEstimate = (estimateObj) => {
+    if (!estimateObj) return '0 h 0 m';
+
+    const { hours, minutes } = estimateObj;
+    return `${hours} h ${minutes} m`;
+  };
 
   // Handle form input changes
   const handleChange = (e) => {
@@ -75,6 +84,37 @@ const AddBacklogItemModal = ({
       setErrors((prev) => ({
         ...prev,
         [name]: "",
+      }));
+    }
+  };
+
+  // Handle estimate input changes
+  const handleEstimateChange = (field, value) => {
+    // Convert to number and validate
+    let numValue = parseInt(value, 10);
+
+    // Handle invalid inputs
+    if (isNaN(numValue)) numValue = 0;
+
+    // Ensure minutes are between 0-59
+    if (field === 'minutes' && numValue > 59) numValue = 59;
+
+    // Ensure values are non-negative
+    if (numValue < 0) numValue = 0;
+
+    setFormData(prev => ({
+      ...prev,
+      estimate: {
+        ...prev.estimate,
+        [field]: numValue
+      }
+    }));
+
+    // Clear error when user types
+    if (errors.estimate) {
+      setErrors(prev => ({
+        ...prev,
+        estimate: ''
       }));
     }
   };
@@ -125,6 +165,21 @@ const AddBacklogItemModal = ({
       newErrors.title = "Summary is required";
     }
 
+    // Validate estimate
+    if (formData.estimate) {
+      const { hours, minutes } = formData.estimate;
+
+      // Check if hours is a valid non-negative integer
+      if (typeof hours !== 'number' || hours < 0 || !Number.isInteger(hours)) {
+        newErrors.estimateHours = 'Hours must be a non-negative integer';
+      }
+
+      // Check if minutes is a valid integer between 0-59
+      if (typeof minutes !== 'number' || minutes < 0 || minutes > 59 || !Number.isInteger(minutes)) {
+        newErrors.estimateMinutes = 'Minutes must be between 0-59';
+      }
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -143,7 +198,19 @@ const AddBacklogItemModal = ({
     e.preventDefault();
 
     if (validateForm()) {
-      onAdd(formData);
+      // Create a copy of the form data
+      const updatedData = { ...formData };
+
+      // Make sure the estimate object is valid
+      if (!updatedData.estimate || typeof updatedData.estimate !== 'object') {
+        updatedData.estimate = { hours: 0, minutes: 0 };
+      }
+
+      // Ensure hours and minutes are numbers
+      updatedData.estimate.hours = Number(updatedData.estimate.hours) || 0;
+      updatedData.estimate.minutes = Number(updatedData.estimate.minutes) || 0;
+
+      onAdd(updatedData);
       onClose();
     }
   };

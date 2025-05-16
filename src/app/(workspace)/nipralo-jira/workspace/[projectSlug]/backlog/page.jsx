@@ -914,17 +914,7 @@ const BacklogPage = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Settings className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>View settings</DropdownMenuItem>
-                  <DropdownMenuItem>Insights</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+               
             </div>
           </div>
         </div>

@@ -193,9 +193,11 @@ const BacklogItem = ({
           {item.status}
         </span>
 
-        {item.estimate && item.estimate !== '0m' && (
+        {item.estimate && (
           <span className="text-xs text-gray-500">
-            {item.estimate}
+            {typeof item.estimate === 'object'
+              ? `${item.estimate.hours} h ${item.estimate.minutes} m`
+              : item.estimate}
           </span>
         )}
 

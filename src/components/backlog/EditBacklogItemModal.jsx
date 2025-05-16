@@ -22,7 +22,10 @@ const EditBacklogItemModal = ({ isOpen, onClose, item, onUpdate, onDelete }) => 
     description: '',
     status: 'TO DO',
     assignee: null,
-    estimate: '0m',
+    estimate: {
+      hours: 0,
+      minutes: 0
+    },
     labels: [],
     type: 'task',
     priority: 'Medium'
@@ -39,15 +42,55 @@ const EditBacklogItemModal = ({ isOpen, onClose, item, onUpdate, onDelete }) => 
     { id: 'user-2', name: 'Jane Smith', avatar: 'JS' },
     { id: 'user-3', name: 'Robert Brown', avatar: 'RB' }
   ];
-  const estimateOptions = ['0m', '1h', '2h', '4h', '8h', '1d', '2d', '1w'];
+
+  // Helper function to parse estimate string into hours and minutes
+  const parseEstimate = (estimateStr) => {
+    // Default values
+    let hours = 0;
+    let minutes = 0;
+
+    if (typeof estimateStr === 'string') {
+      // Handle hour format (e.g., "2h")
+      if (estimateStr.includes('h')) {
+        const h = parseInt(estimateStr.replace('h', ''), 10);
+        if (!isNaN(h)) hours = h;
+      }
+      // Handle minute format (e.g., "30m")
+      else if (estimateStr.includes('m')) {
+        const m = parseInt(estimateStr.replace('m', ''), 10);
+        if (!isNaN(m)) minutes = m;
+      }
+      // Handle day format (e.g., "1d") - convert to hours
+      else if (estimateStr.includes('d')) {
+        const d = parseInt(estimateStr.replace('d', ''), 10);
+        if (!isNaN(d)) hours = d * 8; // Assuming 1 day = 8 hours
+      }
+      // Handle week format (e.g., "1w") - convert to hours
+      else if (estimateStr.includes('w')) {
+        const w = parseInt(estimateStr.replace('w', ''), 10);
+        if (!isNaN(w)) hours = w * 40; // Assuming 1 week = 40 hours
+      }
+    } else if (typeof estimateStr === 'object' && estimateStr !== null) {
+      // If it's already in the correct format
+      hours = estimateStr.hours || 0;
+      minutes = estimateStr.minutes || 0;
+    }
+
+    return { hours, minutes };
+  };
 
   // Initialize form data when item changes or modal opens
   useEffect(() => {
     if (isOpen && item) {
+      // Parse the estimate string into hours and minutes
+      const estimateObj = parseEstimate(item.estimate);
+
       setFormData({
         ...item,
         // Ensure labels is an array
-        labels: item.labels || []
+        labels: item.labels || [],
+        // Set the estimate object
+        estimate: estimateObj
       });
       setErrors({});
     }
@@ -66,6 +109,37 @@ const EditBacklogItemModal = ({ isOpen, onClose, item, onUpdate, onDelete }) => 
       setErrors(prev => ({
         ...prev,
         [name]: ''
+      }));
+    }
+  };
+
+  // Handle estimate input changes
+  const handleEstimateChange = (field, value) => {
+    // Convert to number and validate
+    let numValue = parseInt(value, 10);
+
+    // Handle invalid inputs
+    if (isNaN(numValue)) numValue = 0;
+
+    // Ensure minutes are between 0-59
+    if (field === 'minutes' && numValue > 59) numValue = 59;
+
+    // Ensure values are non-negative
+    if (numValue < 0) numValue = 0;
+
+    setFormData(prev => ({
+      ...prev,
+      estimate: {
+        ...prev.estimate,
+        [field]: numValue
+      }
+    }));
+
+    // Clear error when user types
+    if (errors.estimate) {
+      setErrors(prev => ({
+        ...prev,
+        estimate: ''
       }));
     }
   };
@@ -132,8 +206,31 @@ const EditBacklogItemModal = ({ isOpen, onClose, item, onUpdate, onDelete }) => 
       newErrors.title = 'Summary is required';
     }
 
+    // Validate estimate
+    if (formData.estimate) {
+      const { hours, minutes } = formData.estimate;
+
+      // Check if hours is a valid non-negative integer
+      if (typeof hours !== 'number' || hours < 0 || !Number.isInteger(hours)) {
+        newErrors.estimateHours = 'Hours must be a non-negative integer';
+      }
+
+      // Check if minutes is a valid integer between 0-59
+      if (typeof minutes !== 'number' || minutes < 0 || minutes > 59 || !Number.isInteger(minutes)) {
+        newErrors.estimateMinutes = 'Minutes must be between 0-59';
+      }
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  // Format estimate for display
+  const formatEstimate = (estimateObj) => {
+    if (!estimateObj) return '0 h 0 m';
+
+    const { hours, minutes } = estimateObj;
+    return `${hours} h ${minutes} m`;
   };
 
   // Handle form submission
@@ -141,7 +238,19 @@ const EditBacklogItemModal = ({ isOpen, onClose, item, onUpdate, onDelete }) => 
     e.preventDefault();
 
     if (validateForm()) {
-      onUpdate(formData);
+      // Create a copy of the form data
+      const updatedData = { ...formData };
+
+      // Make sure the estimate object is valid
+      if (!updatedData.estimate || typeof updatedData.estimate !== 'object') {
+        updatedData.estimate = { hours: 0, minutes: 0 };
+      }
+
+      // Ensure hours and minutes are numbers
+      updatedData.estimate.hours = Number(updatedData.estimate.hours) || 0;
+      updatedData.estimate.minutes = Number(updatedData.estimate.minutes) || 0;
+
+      onUpdate(updatedData);
       onClose();
     }
   };
@@ -251,21 +360,40 @@ const EditBacklogItemModal = ({ isOpen, onClose, item, onUpdate, onDelete }) => 
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Estimate
                 </label>
-                <Select
-                  value={formData.estimate}
-                  onValueChange={(value) => handleSelectChange('estimate', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select estimate" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {estimateOptions.map(estimate => (
-                      <SelectItem key={estimate} value={estimate}>
-                        {estimate}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={formData.estimate.hours}
+                      onChange={(e) => handleEstimateChange('hours', e.target.value)}
+                      className={errors.estimateHours ? 'border-red-500' : ''}
+                      placeholder="0"
+                    />
+                    <span className="text-xs text-muted-foreground">Hours</span>
+                    {errors.estimateHours && (
+                      <p className="mt-1 text-xs text-red-500">{errors.estimateHours}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="59"
+                      value={formData.estimate.minutes}
+                      onChange={(e) => handleEstimateChange('minutes', e.target.value)}
+                      className={errors.estimateMinutes ? 'border-red-500' : ''}
+                      placeholder="0"
+                    />
+                    <span className="text-xs text-muted-foreground">Minutes</span>
+                    {errors.estimateMinutes && (
+                      <p className="mt-1 text-xs text-red-500">{errors.estimateMinutes}</p>
+                    )}
+                  </div>
+                </div>
+                <div className="mt-1 text-xs text-gray-500">
+                  Current estimate: {formatEstimate(formData.estimate)}
+                </div>
               </div>
             </div>
 
