@@ -1,12 +1,14 @@
-import React from 'react'
-import TimeTrackingMaster from '@/components/home/time-tracking/TimeTrackingMaster'
+"use client";
 
-const TimeTracking = () => {
+import React from "react";
+import ProjectTrackingMaster from "@/components/home/project-Tracking/ProjectTrackingMaster";
+
+const ProjectTimeTracking = () => {
   return (
-    <div>
-      <TimeTrackingMaster />
+    <div className="container mx-auto px-6">
+      <ProjectTrackingMaster />
     </div>
-  )
-}
+  );
+};
 
-export default TimeTracking
+export default ProjectTimeTracking;
