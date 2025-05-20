@@ -164,22 +164,18 @@ const TimeTrackingMaster = () => {
       />
 
       {/* Add/Edit Modal */}
-      {isAddModalOpen && (
-        <TimeEntryModal
-          isOpen={isAddModalOpen}
-          onClose={() => setIsAddModalOpen(false)}
-          onSave={handleAddEntry}
-        />
-      )}
+      <TimeEntryModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSave={handleAddEntry}
+      />
 
-      {editEntry && (
-        <TimeEntryModal
-          isOpen={!!editEntry}
-          onClose={() => setEditEntry(null)}
-          onSave={handleEditEntry}
-          editEntry={editEntry}
-        />
-      )}
+      <TimeEntryModal
+        isOpen={!!editEntry}
+        onClose={() => setEditEntry(null)}
+        onSave={handleEditEntry}
+        editEntry={editEntry}
+      />
     </div>
   );
 };

@@ -24,18 +24,18 @@ const ProjectSidebarItems = [
   { label: "Backlog", icon: FileStack, href: "backlog" },
   { label: "Board", icon: KanbanSquare, href: "board" },
   { label: "All Work", icon: ClipboardList, href: "all-work" },
-  { label: "Time Tracking", icon: Timer, href: "time-tracking" }, 
-  { label: "Tasks", icon: CheckSquare, href: "tasks" },
-  { label: "Team", icon: Users, href: "team" },
-  { label: "Calendar", icon: CalendarDays, href: "calendar" },
-  { label: "Messages", icon: MessageCircle, href: "messages" },
+  { label: "Time Tracking", icon: Timer, href: "time-tracking" },
+  // { label: "Tasks", icon: CheckSquare, href: "tasks" },
+  // { label: "Team", icon: Users, href: "team" },
+  { label: "Sprints", icon: CalendarDays, href: "sprints" },
+  // { label: "Messages", icon: MessageCircle, href: "messages" },
   { label: "Settings", icon: Settings, href: "settings" },
 ];
 
 const ProjectSidebar = () => {
   const pathname = usePathname();
   const params = useParams();
-  
+
   // Extract projectSlug from params or from the URL if not available in params
   let { projectSlug } = params;
 

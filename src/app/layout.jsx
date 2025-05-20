@@ -1,7 +1,8 @@
 // import Footer from "@/components/common/Footer";
 import Header from "@/components/common/Header";
 import "./globals.css";
-import { Geist } from 'next/font/google'
+import { Geist } from 'next/font/google';
+import StoreProvider from "../app/StoreProvider";
 
 const geist = Geist({
   subsets: ['latin'],
@@ -16,9 +17,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={geist.className}>
       <body>
-        <Header />
-        {children}
-        {/* <Footer /> */}
+        {/* Wrap the entire app with StoreProvider to make Redux store available */}
+        <StoreProvider>
+          <Header />
+          {children}
+          {/* <Footer /> */}
+        </StoreProvider>
       </body>
     </html>
   );

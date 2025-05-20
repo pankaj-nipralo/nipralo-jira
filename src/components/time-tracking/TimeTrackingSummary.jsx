@@ -146,8 +146,8 @@ const TaskTrackingSummary = ({ timeEntries }) => {
     const sortedHoursByEpic = [...processedHoursByEpic].sort((a, b) => b.numericHours - a.numericHours);
 
     // Log for debugging
-    console.log('Processed Member Data:', sortedHoursByMember);
-    console.log('Processed Epic Data:', sortedHoursByEpic);
+    // console.log('Processed Member Data:', sortedHoursByMember);
+    // console.log('Processed Epic Data:', sortedHoursByEpic);
 
     return {
       totalHours,
@@ -219,8 +219,8 @@ const TaskTrackingSummary = ({ timeEntries }) => {
   };
 
   // Debug output
-  console.log('Team Member Chart Data:', summaryData.hoursByMember);
-  console.log('Epic Chart Data:', summaryData.hoursByEpic);
+  // console.log('Team Member Chart Data:', summaryData.hoursByMember);
+  // console.log('Epic Chart Data:', summaryData.hoursByEpic);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">

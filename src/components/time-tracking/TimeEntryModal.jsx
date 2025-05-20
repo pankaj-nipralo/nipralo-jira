@@ -28,7 +28,8 @@ const TimeEntryModal = ({
   editEntry = null,
   isAdmin = true // For controlling approval/rejection access
 }) => {
-  const initialFormState = {
+  // Define initialFormState outside of the component or use useMemo
+  const [formData, setFormData] = useState({
     id: null,
     date: getCurrentDate(),
     teamMemberId: '',
@@ -37,9 +38,7 @@ const TimeEntryModal = ({
     hours: '',
     minutes: '',
     status: 'submitted'
-  };
-
-  const [formData, setFormData] = useState(initialFormState);
+  });
   const [errors, setErrors] = useState({});
 
   // If editing an entry, populate the form
@@ -72,10 +71,20 @@ const TimeEntryModal = ({
         status: editEntry.status
       });
     } else {
-      setFormData(initialFormState);
+      // Reset to default values
+      setFormData({
+        id: null,
+        date: getCurrentDate(),
+        teamMemberId: '',
+        epicId: '',
+        taskDescription: '',
+        hours: '',
+        minutes: '',
+        status: 'submitted'
+      });
     }
     setErrors({});
-  }, [editEntry, isOpen, initialFormState]);
+  }, [editEntry, isOpen]);
 
   // Handle form input changes
   const handleChange = (e) => {
@@ -180,7 +189,9 @@ const TimeEntryModal = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      if (!open) onClose();
+    }}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>

@@ -1,4 +1,3 @@
-import React from 'react'
 import TimeTrackingMaster from '@/components/time-tracking/TimeTrackingMaster'
 
 const TimeTracking = () => {

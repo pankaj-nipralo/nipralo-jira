@@ -55,7 +55,7 @@ const Register = () => {
 
   const onSubmit = (values) => {
     setLoading(true);
-    console.log("Register form values submitted:", values);
+    // // console.log("Register form values submitted:", values);
 
     // Simulate delay
     setTimeout(() => {

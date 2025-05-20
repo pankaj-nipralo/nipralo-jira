@@ -46,7 +46,7 @@ const ForgetPassword = () => {
 
   const onSubmit = (values) => {
     setLoading(true);
-    console.log("Password reset request for:", values.email);
+    // // console.log("Password reset request for:", values.email);
 
     // Simulate sending reset link
     setTimeout(() => {

@@ -1,14 +1,27 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useToast } from "@/components/ui/toast";
+import { useParams, useRouter } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+  selectBacklogSprints,
+  fetchSprints,
+  createSprint,
+  updateSprint,
+  startSprint,
+  completeSprint,
+  addTaskToSprint,
+  removeTaskFromSprint,
+  moveTask,
+  moveTaskBetweenBacklogAndSprint
+} from "@/store/sprintSlice";
 import {
   Search,
   Plus,
   ChevronDown,
   ChevronRight,
   MoreHorizontal,
-  Settings,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -33,9 +46,14 @@ import CompleteSprintModal from "@/components/backlog/CompleteSprintModal";
 const BacklogPage = () => {
   const params = useParams();
   const { projectSlug } = params;
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const toast = useToast();
 
-  // State for sprints and backlog items
-  const [sprints, setSprints] = useState([]);
+  // Get sprints from Redux store
+  const backlogSprints = useAppSelector(selectBacklogSprints);
+
+  // State for backlog items (will be moved to Redux later)
   const [backlogItems, setBacklogItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedSprints, setExpandedSprints] = useState({});
@@ -45,6 +63,9 @@ const BacklogPage = () => {
   const [filteredBacklogItems, setFilteredBacklogItems] = useState([]);
   const [filteredSprints, setFilteredSprints] = useState([]);
   const [epicFilter, setEpicFilter] = useState("all");
+
+  // Local state for sprints (will be replaced by Redux)
+  const [sprints, setSprints] = useState([]);
 
   // State for sprint management
   const [isCreateSprintModalOpen, setIsCreateSprintModalOpen] = useState(false);
@@ -68,30 +89,43 @@ const BacklogPage = () => {
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
 
-  // Fetch sprints, backlog items, users, and epics (using dummy data)
+  // Fetch sprints, backlog items, users, and epics
   useEffect(() => {
-    // Simulate API call
+    // Fetch sprints from Redux
+    dispatch(fetchSprints(projectSlug));
+
+    // Simulate API call for other data (will be moved to Redux later)
     setTimeout(() => {
       const dummyData = generateDummyData();
-      setSprints(dummyData.sprints);
       setBacklogItems(dummyData.backlogItems);
       setUsers(dummyData.users);
       setEpics(dummyData.epics);
 
-      // Initialize filtered data
-      setFilteredSprints(dummyData.sprints);
+      // Initialize filtered backlog items
       setFilteredBacklogItems(dummyData.backlogItems);
-
-      // Initialize expanded state for all sprints
-      const initialExpandedState = {};
-      dummyData.sprints.forEach((sprint) => {
-        initialExpandedState[sprint.id] = true; // Start expanded
-      });
-      setExpandedSprints({ ...initialExpandedState, backlog: true });
 
       setLoading(false);
     }, 100);
-  }, [projectSlug]);
+  }, [dispatch, projectSlug]);
+
+  // Update local sprints state when Redux state changes
+  useEffect(() => {
+    if (backlogSprints.length > 0) {
+      setSprints(backlogSprints);
+      setFilteredSprints(backlogSprints);
+
+      // Initialize expanded state for all sprints
+      const initialExpandedState = {};
+      backlogSprints.forEach((sprint) => {
+        initialExpandedState[sprint.id] = true; // Start expanded
+      });
+      setExpandedSprints(prev => ({
+        ...prev,
+        ...initialExpandedState,
+        backlog: true
+      }));
+    }
+  }, [backlogSprints]);
 
   // Handle search, epic, and user filtering
   useEffect(() => {
@@ -328,19 +362,13 @@ const BacklogPage = () => {
     };
 
     if (targetSprint) {
-      // Add to specific sprint
-      const updatedSprints = sprints.map((sprint) => {
-        if (sprint.id === targetSprint) {
-          return {
-            ...sprint,
-            items: [...sprint.items, itemWithKey],
-          };
-        }
-        return sprint;
-      });
-      setSprints(updatedSprints);
+      // Add to specific sprint using Redux
+      dispatch(addTaskToSprint({
+        sprintId: targetSprint,
+        task: itemWithKey
+      }));
     } else {
-      // Add to backlog
+      // Add to backlog (still using local state for now)
       setBacklogItems([...backlogItems, itemWithKey]);
     }
     setTargetSprint(null);
@@ -350,23 +378,32 @@ const BacklogPage = () => {
   const handleUpdateItem = (updatedItem) => {
     // Check if item is in a sprint
     let itemFound = false;
+    let sprintId = null;
 
     // Check in sprints first
-    const updatedSprints = sprints.map((sprint) => {
+    for (const sprint of sprints) {
       const itemIndex = sprint.items.findIndex(
         (item) => item.id === updatedItem.id
       );
       if (itemIndex >= 0) {
         itemFound = true;
-        const updatedItems = [...sprint.items];
-        updatedItems[itemIndex] = updatedItem;
-        return { ...sprint, items: updatedItems };
+        sprintId = sprint.id;
+        break;
       }
-      return sprint;
-    });
+    }
 
-    if (itemFound) {
-      setSprints(updatedSprints);
+    if (itemFound && sprintId) {
+      // First remove the old item
+      dispatch(removeTaskFromSprint({
+        sprintId,
+        taskId: updatedItem.id
+      }));
+
+      // Then add the updated item
+      dispatch(addTaskToSprint({
+        sprintId,
+        task: updatedItem
+      }));
     } else {
       // Check in backlog
       const updatedBacklog = backlogItems.map((item) =>
@@ -380,20 +417,24 @@ const BacklogPage = () => {
   const handleDeleteItem = (itemId) => {
     // Check if item is in a sprint
     let itemFound = false;
+    let sprintId = null;
 
     // Check in sprints first
-    const updatedSprints = sprints.map((sprint) => {
+    for (const sprint of sprints) {
       const itemIndex = sprint.items.findIndex((item) => item.id === itemId);
       if (itemIndex >= 0) {
         itemFound = true;
-        const updatedItems = sprint.items.filter((item) => item.id !== itemId);
-        return { ...sprint, items: updatedItems };
+        sprintId = sprint.id;
+        break;
       }
-      return sprint;
-    });
+    }
 
-    if (itemFound) {
-      setSprints(updatedSprints);
+    if (itemFound && sprintId) {
+      // Remove the item from the sprint using Redux
+      dispatch(removeTaskFromSprint({
+        sprintId,
+        taskId: itemId
+      }));
     } else {
       // Remove from backlog
       const updatedBacklog = backlogItems.filter((item) => item.id !== itemId);
@@ -410,93 +451,52 @@ const BacklogPage = () => {
     targetId,
     targetIndex
   ) => {
-    let itemToMove = null;
-    let updatedSprints = [...sprints];
-    let updatedBacklogItems = [...backlogItems];
-
-    // Find and remove the item from its source
-    if (sourceType === "sprint") {
-      const sourceSprintIndex = updatedSprints.findIndex(
-        (sprint) => sprint.id === sourceId
-      );
-      if (sourceSprintIndex >= 0) {
-        const itemIndex = updatedSprints[sourceSprintIndex].items.findIndex(
-          (item) => item.id === itemId
-        );
-        if (itemIndex >= 0) {
-          // Get a deep copy of the item
-          itemToMove = JSON.parse(
-            JSON.stringify(updatedSprints[sourceSprintIndex].items[itemIndex])
-          );
-          // Remove the item from source
-          updatedSprints[sourceSprintIndex] = {
-            ...updatedSprints[sourceSprintIndex],
-            items: updatedSprints[sourceSprintIndex].items.filter(
-              (item) => item.id !== itemId
-            ),
-          };
-        }
-      }
-    } else if (sourceType === "backlog") {
-      const itemIndex = updatedBacklogItems.findIndex(
-        (item) => item.id === itemId
-      );
-      if (itemIndex >= 0) {
-        // Get a deep copy of the item
-        itemToMove = JSON.parse(JSON.stringify(updatedBacklogItems[itemIndex]));
-        // Remove the item from source
-        updatedBacklogItems = updatedBacklogItems.filter(
-          (item) => item.id !== itemId
-        );
-      }
+    // If moving between sprints
+    if (sourceType === "sprint" && targetType === "sprint") {
+      dispatch(moveTask({
+        taskId: itemId,
+        sourceSprintId: sourceId,
+        targetSprintId: targetId,
+        targetIndex
+      }));
     }
+    // If moving between backlog and sprint or vice versa
+    else {
+      dispatch(moveTaskBetweenBacklogAndSprint({
+        taskId: itemId,
+        sourceType,
+        sourceId,
+        targetType,
+        targetId,
+        targetIndex
+      }));
 
-    // Add the item to its target
-    if (itemToMove) {
-      // Handle reordering within the same container
-      if (
-        sourceType === targetType &&
-        sourceId === targetId &&
-        targetIndex !== undefined
-      ) {
-        if (sourceType === "sprint") {
-          const sprintIndex = updatedSprints.findIndex(
-            (sprint) => sprint.id === sourceId
-          );
-          if (sprintIndex >= 0) {
-            const items = [...updatedSprints[sprintIndex].items];
-            // Insert at the target index
-            items.splice(targetIndex, 0, itemToMove);
-            updatedSprints[sprintIndex] = {
-              ...updatedSprints[sprintIndex],
-              items,
-            };
+      // If moving to/from backlog, we need to update local backlog items
+      // This is temporary until we move backlog items to Redux as well
+      if (sourceType === "backlog" || targetType === "backlog") {
+        // Find the item in the backlog if it's the source
+        if (sourceType === "backlog") {
+          const updatedBacklogItems = backlogItems.filter(item => item.id !== itemId);
+          setBacklogItems(updatedBacklogItems);
+        }
+        // Add the item to the backlog if it's the target
+        else if (targetType === "backlog") {
+          // Find the item in the source sprint
+          const sourceSprint = sprints.find(sprint => sprint.id === sourceId);
+          if (sourceSprint) {
+            const item = sourceSprint.items.find(item => item.id === itemId);
+            if (item) {
+              if (targetIndex !== undefined) {
+                const newBacklogItems = [...backlogItems];
+                newBacklogItems.splice(targetIndex, 0, item);
+                setBacklogItems(newBacklogItems);
+              } else {
+                setBacklogItems([...backlogItems, item]);
+              }
+            }
           }
-        } else if (sourceType === "backlog") {
-          // Insert at the target index
-          updatedBacklogItems.splice(targetIndex, 0, itemToMove);
         }
       }
-      // Handle moving between containers
-      else {
-        if (targetType === "sprint") {
-          const targetSprintIndex = updatedSprints.findIndex(
-            (sprint) => sprint.id === targetId
-          );
-          if (targetSprintIndex >= 0) {
-            updatedSprints[targetSprintIndex] = {
-              ...updatedSprints[targetSprintIndex],
-              items: [...updatedSprints[targetSprintIndex].items, itemToMove],
-            };
-          }
-        } else if (targetType === "backlog") {
-          updatedBacklogItems = [...updatedBacklogItems, itemToMove];
-        }
-      }
-
-      // Update state
-      setSprints(updatedSprints);
-      setBacklogItems(updatedBacklogItems);
     }
   };
 
@@ -729,6 +729,9 @@ const BacklogPage = () => {
     };
   };
 
+  // Get toast list component
+  const { ToastList } = toast;
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-full">Loading...</div>
@@ -738,6 +741,9 @@ const BacklogPage = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="p-4 max-w-[1200px] mx-auto">
+        {/* Toast notifications */}
+        <ToastList />
+
         {/* Backlog Header */}
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
@@ -914,7 +920,7 @@ const BacklogPage = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-               
+
             </div>
           </div>
         </div>
@@ -1197,7 +1203,7 @@ const BacklogPage = () => {
           isOpen={isCreateSprintModalOpen}
           onClose={() => setIsCreateSprintModalOpen(false)}
           onCreateSprint={(newSprint) => {
-            setSprints([...sprints, newSprint]);
+            dispatch(createSprint(newSprint));
           }}
         />
 
@@ -1209,11 +1215,7 @@ const BacklogPage = () => {
           }}
           sprint={selectedSprint}
           onUpdateSprint={(updatedSprint) => {
-            // Update the sprint in the sprints array
-            const updatedSprints = sprints.map(sprint =>
-              sprint.id === updatedSprint.id ? updatedSprint : sprint
-            );
-            setSprints(updatedSprints);
+            dispatch(updateSprint(updatedSprint));
           }}
         />
 
@@ -1259,15 +1261,16 @@ const BacklogPage = () => {
                 </Button>
                 <Button
                   onClick={() => {
-                    // Update sprint status to ACTIVE
-                    const updatedSprints = sprints.map((sprint) =>
-                      sprint.id === selectedSprint.id
-                        ? { ...sprint, status: "ACTIVE" }
-                        : sprint
-                    );
-                    setSprints(updatedSprints);
+                    // Start the sprint using Redux
+                    dispatch(startSprint(selectedSprint.id));
                     setIsStartSprintModalOpen(false);
                     setSelectedSprint(null);
+
+                    // Show success toast
+                    toast.success(`Sprint "${selectedSprint.name}" started successfully`);
+
+                    // Navigate to the sprints page to show the active sprint
+                    router.push(`/nipralo-jira/workspace/${projectSlug}/sprints`);
                   }}
                 >
                   Start
@@ -1285,53 +1288,18 @@ const BacklogPage = () => {
           }}
           sprint={selectedSprint}
           onCompleteSprint={(sprintId, completionData, incompleteItemsDestination) => {
-            // Handle incomplete items
-            let updatedBacklogItems = [...backlogItems];
-            let nextSprintId = null;
+            // Complete the sprint using Redux
+            dispatch(completeSprint({
+              sprintId,
+              completionData,
+              incompleteItemsDestination
+            }));
 
-            // Find the next planned sprint if we're moving items to the next sprint
-            if (incompleteItemsDestination === 'next') {
-              const plannedSprints = sprints.filter(s => s.status === 'PLANNED');
-              if (plannedSprints.length > 0) {
-                // Sort by start date to find the earliest planned sprint
-                plannedSprints.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
-                nextSprintId = plannedSprints[0].id;
-              }
-            }
-
-            // Update sprints with completion data and handle incomplete items
-            const updatedSprints = sprints.map(sprint => {
-              if (sprint.id === sprintId) {
-                // Get completed items
-                const completedItems = sprint.items.filter(item => item.status === 'DONE');
-
-                // Create updated sprint with completion data
-                return {
-                  ...sprint,
-                  status: "COMPLETED",
-                  completionData,
-                  items: completedItems // Keep only completed items in the sprint
-                };
-              } else if (sprint.id === nextSprintId && incompleteItemsDestination === 'next') {
-                // Move incomplete items to the next sprint
-                const incompleteItems = selectedSprint.items.filter(item => item.status !== 'DONE');
-                return {
-                  ...sprint,
-                  items: [...sprint.items, ...incompleteItems]
-                };
-              }
-              return sprint;
-            });
-
-            // If we're moving items to the backlog or there's no next sprint
-            if (incompleteItemsDestination === 'backlog' || (incompleteItemsDestination === 'next' && !nextSprintId)) {
+            // Handle incomplete items for backlog (this part will be moved to Redux later)
+            if (incompleteItemsDestination === 'backlog' && selectedSprint) {
               const incompleteItems = selectedSprint.items.filter(item => item.status !== 'DONE');
-              updatedBacklogItems = [...updatedBacklogItems, ...incompleteItems];
+              setBacklogItems([...backlogItems, ...incompleteItems]);
             }
-
-            // Update state
-            setSprints(updatedSprints);
-            setBacklogItems(updatedBacklogItems);
           }}
         />
 

@@ -33,7 +33,7 @@ export default function Home() {
 
     getHomeData();
   }, []);
-  console.log(homeData);
+  // // console.log(homeData);
 
   if (!homeData) return <div>Loading banner...</div>;
 

@@ -96,9 +96,9 @@ const ProjectDashboard = () => {
             <h1 className="text-2xl font-bold">{project.name}</h1>
             <p className="text-gray-500">{project.description}</p>
           </div>
-          <Button onClick={() => setIsAddTaskModalOpen(true)}>
+          {/* <Button onClick={() => setIsAddTaskModalOpen(true)}>
             <Plus className="h-4 w-4 mr-2" /> Add Task
-          </Button>
+          </Button> */}
         </div>
 
         <div className="mt-4 bg-gray-100 h-2 rounded-full overflow-hidden">
@@ -158,12 +158,12 @@ const ProjectDashboard = () => {
                   {member.avatar}
                 </div>
               ))}
-              <div
+              {/* <div
                 className="w-8 h-8 rounded-full bg-gray-100 text-gray-600 text-xs font-bold flex items-center justify-center -ml-2 border-2 border-white cursor-pointer"
                 onClick={() => setIsAddMemberModalOpen(true)}
               >
                 <Plus className="h-4 w-4" />
-              </div>
+              </div> */}
             </div>
           </CardContent>
         </Card>
@@ -287,14 +287,14 @@ const ProjectDashboard = () => {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Team Members</CardTitle>
-          <Button
+          {/* <Button
             size="sm"
             variant="outline"
             className="h-8"
             onClick={() => setIsAddMemberModalOpen(true)}
           >
             <Plus className="h-4 w-4 mr-1" /> Add Member
-          </Button>
+          </Button> */}
         </CardHeader>
         <CardContent>
           <div className="space-y-4">

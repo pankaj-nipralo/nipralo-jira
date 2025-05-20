@@ -57,7 +57,7 @@ const UpdatePassword = () => {
 
   const onSubmit = (values) => {
     setLoading(true);
-    console.log("New password submitted:", values.password);
+    // // console.log("New password submitted:", values.password);
 
     setTimeout(() => {
       setLoading(false);

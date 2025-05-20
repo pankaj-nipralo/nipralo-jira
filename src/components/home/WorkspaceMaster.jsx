@@ -18,10 +18,10 @@ const initialProjects = [
     slug: "warpp",
   }, 
   {
-    title: "Warpp",
+    title: "Nipralo",
     description: "Team-managed software",
     workItems: { open: 0 },
-    slug: "warpp",
+    slug: "nipralo",
   },
 ];
 

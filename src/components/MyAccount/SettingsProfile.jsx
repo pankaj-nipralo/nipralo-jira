@@ -56,7 +56,7 @@ const SettingsProfile = ({ user }) => {
     // Simulate upload
     setTimeout(() => {
       setLoading(false);
-      console.log("FormData:", values, selectedFile);
+      // console.log("FormData:", values, selectedFile);
       toast.success("Profile updated successfully (simulated)");
     }, 1000);
   };

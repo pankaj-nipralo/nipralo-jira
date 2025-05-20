@@ -41,7 +41,7 @@ const ClientHeader = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form Data:", JSON.stringify(formData, null, 2));
+    // console.log("Form Data:", JSON.stringify(formData, null, 2));
     alert(`Form submitted:\n${JSON.stringify(formData, null, 2)}`);
     setAddClient(false);
     // Reset form
